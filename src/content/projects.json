@@ -18,7 +18,7 @@
     "title": "Nomad Hive",
     "type": "Marketplace App",
     "stack": ["React", "Next.js", "Tailwind", "Prisma", "MongoDB"],
-    "description": "Marketplace that connects travellers with short-term homestays and experiences worldwide.",
+    "description": "Marketplace that connects travellers with short‑term homestays and experiences worldwide.",
     "link": "https://wojkr.github.io/projects/#1",
     "size": "large",
     "image": "../assets/images/project-nomad-hive.webp",

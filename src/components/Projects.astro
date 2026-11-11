@@ -51,21 +51,8 @@ const wakeUrls = projects.flatMap((p) => (p.wakeUrl ? [p.wakeUrl] : []));
     gap: var(--grid-gap);
   }
 
-  /* md: two equal columns. An odd last card sits centered at one-column width. */
-  @media (min-width: 48em) and (max-width: 63.99em) {
-    .bento {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .bento__item:last-child:nth-child(odd) {
-      grid-column: 1 / -1;
-      justify-self: center;
-      width: calc(50% - var(--grid-gap) / 2);
-    }
-  }
-
-  /* lg: 12 columns. Large = 6 (two in a row), small = 4 (three in a row). */
-  @media (min-width: 64em) {
+  /* md and up: 12 columns. Large = 6 (two in a row), small = 4 (three in a row). */
+  @media (min-width: 48em) {
     .bento {
       grid-template-columns: repeat(12, minmax(0, 1fr));
     }
