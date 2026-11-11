@@ -1,0 +1,389 @@
+---
+/*
+ * Experience section: main timeline (effect E6), earlier roles, education.
+ * All content comes from the `experience` and `education` collections.
+ * No client JS. Dates are formatted at build time.
+ */
+import { getCollection } from 'astro:content';
+import SectionHeading from './SectionHeading.astro';
+
+const experience = (await getCollection('experience'))
+  .map((e) => e.data)
+  .sort((a, b) => a.order - b.order);
+const main = experience.filter((e) => e.group === 'main');
+const earlier = experience.filter((e) => e.group === 'earlier');
+
+const education = (await getCollection('education'))
+  .map((e) => e.data)
+  .sort((a, b) => a.order - b.order);
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** "2025-04" -> "Apr 2025". Locale-independent. */
+function formatYearMonth(value: string): string {
+  const [year, month] = value.split('-');
+  return `${MONTHS[Number(month) - 1]} ${year}`;
+}
+---
+
+<section id="experience" class="section" aria-labelledby="experience-title">
+  <div class="container">
+    <SectionHeading id="experience-title" eyebrow="02 / Experience" title="Where I have worked" />
+
+    {/* Main timeline */}
+    <div class="timeline">
+      <div class="timeline-line" aria-hidden="true"></div>
+      <ol class="timeline__list" role="list">
+        {
+          main.map((job, i) => {
+            const current = job.end === null;
+            return (
+              <li class:list={['entry', { 'entry--current': current }]} data-reveal style={`--reveal-i: ${i}`}>
+                <span class="entry__dot" aria-hidden="true" />
+                <div class="entry__meta">
+                  <p class="eyebrow entry__dates">
+                    <time datetime={job.start}>{formatYearMonth(job.start)}</time>
+                    {' — '}
+                    {job.end === null ? (
+                      <span>Present</span>
+                    ) : (
+                      <time datetime={job.end}>{formatYearMonth(job.end)}</time>
+                    )}
+                  </p>
+                  {current && <span class="entry__badge">Current</span>}
+                </div>
+                <div class="entry__body">
+                  <h3 class="entry__role">{job.role}</h3>
+                  <p class="entry__company">{job.company}</p>
+                  <ul class="entry__bullets">
+                    {job.bullets.map((bullet) => (
+                      <li>{bullet}</li>
+                    ))}
+                  </ul>
+                  {job.tags && (
+                    <div class="entry__tags">
+                      <p class="entry__tags-label">Modules</p>
+                      <ul class="tag-list" role="list">
+                        {job.tags.map((tag) => (
+                          <li class="tag">{tag}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+
+    {/* Earlier roles */}
+    {
+      earlier.length > 0 && (
+        <div class="block">
+          <div class="block__head" data-reveal>
+            <h3 class="block__title">Earlier roles</h3>
+            <p class="text-muted">Before software: design, leadership, and client work.</p>
+          </div>
+          <ul class="earlier" role="list">
+            {earlier.map((job, i) => (
+              <li class="card earlier__card" data-reveal style={`--reveal-i: ${i}`}>
+                <h4 class="earlier__role">{job.role}</h4>
+                <p class="earlier__company">{job.company}</p>
+                <p class="eyebrow earlier__dates">
+                  <time datetime={job.start}>{formatYearMonth(job.start)}</time>
+                  {' — '}
+                  {job.end === null ? (
+                    <span>Present</span>
+                  ) : (
+                    <time datetime={job.end}>{formatYearMonth(job.end)}</time>
+                  )}
+                </p>
+                {job.bullets.map((bullet) => (
+                  <p class="earlier__text">{bullet}</p>
+                ))}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+
+    {/* Education */}
+    {
+      education.length > 0 && (
+        <div class="block">
+          <div class="block__head" data-reveal>
+            <h3 class="block__title">Education</h3>
+          </div>
+          <ul class="education" role="list">
+            {education.map((item, i) => (
+              <li class="card education__card" data-reveal style={`--reveal-i: ${i}`}>
+                <div>
+                  <h4 class="education__degree">{item.degree}</h4>
+                  <p class="education__institution">{item.institution}</p>
+                </div>
+                <div class="education__details">
+                  <p>{item.field}</p>
+                  {item.major && <p class="text-muted">{item.major}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  /* --- Timeline wrapper. --tl-x = left edge of the dot column. --- */
+  .timeline {
+    --tl-dot: var(--space-4);
+    --tl-indent: calc(var(--tl-dot) + var(--space-4));
+    --tl-x: 0px;
+    position: relative;
+  }
+
+  /* The line runs through the centre of the dots (contract: motion.css). */
+  .timeline-line {
+    top: var(--space-1);
+    left: calc(var(--tl-x) + var(--tl-dot) / 2 - 1px);
+  }
+
+  /* --- Entry: phone layout, everything stacked to the right of the line. --- */
+  .entry {
+    position: relative;
+    padding-inline-start: var(--tl-indent);
+  }
+
+  .entry + .entry {
+    margin-block-start: var(--space-7);
+  }
+
+  /* Dot marker: outlined by default. It covers the line behind it. */
+  .entry__dot {
+    position: absolute;
+    top: 0;
+    left: var(--tl-x);
+    width: var(--tl-dot);
+    height: var(--tl-dot);
+    border: 2px solid var(--color-border-strong);
+    border-radius: 50%;
+    background-color: var(--color-bg);
+  }
+
+  /* Current job: filled accent dot with a soft ring. */
+  .entry--current .entry__dot {
+    top: var(--space-1);
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+    box-shadow:
+      0 0 0 var(--space-1) var(--color-accent-soft),
+      var(--shadow-glow);
+  }
+
+  .entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-block-end: var(--space-3);
+  }
+
+  /* Past jobs: quiet date. The current job keeps the accent color. */
+  .entry__dates {
+    color: var(--color-text-muted);
+  }
+
+  .entry--current .entry__dates {
+    color: var(--color-accent);
+  }
+
+  .entry__badge {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: var(--leading-snug);
+  }
+
+  /* The current role is the largest item of the section. */
+  .entry--current .entry__role {
+    font-size: var(--step-3);
+  }
+
+  .entry__company {
+    margin-block-start: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+    font-weight: var(--weight-semibold);
+  }
+
+  .entry--current .entry__company {
+    color: var(--color-accent);
+  }
+
+  .entry__bullets {
+    max-width: var(--measure);
+    margin-block-start: var(--space-4);
+    color: var(--color-text-muted);
+  }
+
+  .entry--current .entry__bullets {
+    color: var(--color-text);
+  }
+
+  .entry__bullets li::marker {
+    color: var(--color-accent);
+  }
+
+  .entry__tags {
+    margin-block-start: var(--space-5);
+  }
+
+  .entry__tags-label {
+    margin-block-end: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-weight: var(--weight-semibold);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Long tag names must wrap on narrow screens (global .tag is nowrap). */
+  .tag-list .tag {
+    white-space: normal;
+  }
+
+  /* --- Blocks under the timeline: earlier roles, education. --- */
+  .block {
+    margin-block-start: var(--space-8);
+  }
+
+  .block__head {
+    margin-block-end: var(--space-5);
+  }
+
+  .block__title {
+    font-size: var(--step-1);
+  }
+
+  .block__title + p {
+    margin-block-start: var(--space-2);
+  }
+
+  .earlier {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--grid-gap);
+  }
+
+  /* Compact cards: quieter than the main timeline. */
+  .earlier__card,
+  .education__card {
+    padding: var(--space-5);
+  }
+
+  .earlier__role,
+  .education__degree {
+    font-size: var(--step-0);
+  }
+
+  .earlier__company,
+  .education__institution {
+    margin-block-start: var(--space-1);
+    color: var(--color-text-muted);
+    font-weight: var(--weight-semibold);
+  }
+
+  .earlier__dates {
+    margin-block-start: var(--space-3);
+    color: var(--color-text-muted);
+  }
+
+  .earlier__text {
+    margin-block-start: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .education {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--grid-gap);
+  }
+
+  .education__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 48em) {
+    .education__card {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--grid-gap);
+      align-items: center;
+    }
+  }
+
+  /* --- Desktop: date column (3/12) | line | content column (9/12). --- */
+  @media (min-width: 64em) {
+    .timeline {
+      --tl-x: calc((100% - var(--grid-gap)) * 0.25 + var(--grid-gap));
+    }
+
+    .timeline-line {
+      top: var(--space-2);
+    }
+
+    .entry {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      gap: var(--grid-gap);
+      padding-inline-start: 0;
+    }
+
+    .entry + .entry {
+      margin-block-start: var(--space-8);
+    }
+
+    .entry__dot {
+      top: var(--space-2);
+    }
+
+    .entry--current .entry__dot {
+      top: var(--space-3);
+    }
+
+    .entry__meta {
+      flex-direction: column;
+      align-items: flex-end;
+      align-self: start;
+      margin-block-end: 0;
+      padding-block-start: var(--space-2);
+      text-align: right;
+    }
+
+    .entry--current .entry__meta {
+      padding-block-start: var(--space-3);
+    }
+
+    .entry__body {
+      padding-inline-start: var(--tl-indent);
+    }
+
+    .earlier {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>
