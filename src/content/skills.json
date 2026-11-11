@@ -1,0 +1,32 @@
+[
+  {
+    "id": "languages",
+    "order": 1,
+    "title": "Languages",
+    "items": ["C#", "Python", "C", "C++", "TypeScript", "JavaScript"]
+  },
+  {
+    "id": "dotnet-desktop",
+    "order": 2,
+    "title": ".NET & Desktop",
+    "items": [".NET", "ASP.NET", "WPF", "Entity Framework"]
+  },
+  {
+    "id": "data",
+    "order": 3,
+    "title": "Data",
+    "items": ["MS SQL", "T-SQL", "MongoDB"]
+  },
+  {
+    "id": "testing-tools",
+    "order": 4,
+    "title": "Testing & Tools",
+    "items": ["xUnit", "NUnit", "Postman", "Swagger", "Git", "Visual Studio"]
+  },
+  {
+    "id": "web",
+    "order": 5,
+    "title": "Web",
+    "items": ["React", "Redux", "Next.js", "Node.js", "Express", "Tailwind"]
+  }
+]

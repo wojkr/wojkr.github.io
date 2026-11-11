@@ -1,0 +1,113 @@
+---
+/*
+ * Skills section. All content comes from the `skills` collection (src/content/skills.json).
+ * A new group or item needs no code change: the bento spans come from the position and the count.
+ */
+import { getCollection } from 'astro:content';
+import SectionHeading from './SectionHeading.astro';
+
+const skills = (await getCollection('skills')).map((e) => e.data).sort((a, b) => a.order - b.order);
+
+const total = skills.length;
+/** The first groups get the wide cards and the larger chips. */
+const PRIMARY_COUNT = 2;
+/** Cards after the primary row. */
+const rest = Math.max(total - PRIMARY_COUNT, 0);
+/** Cards of the last row when the rest does not fill rows of three. */
+const tail = rest % 3 === 1 ? (rest === 1 ? 1 : 4) : rest % 3 === 2 ? 2 : 0;
+
+/** Column span (of 12) at lg. Every row adds up to 12, so no row has a hole. */
+function spanLg(index: number): number {
+  if (total === 1) return 12;
+  if (index === 0) return 7;
+  if (index === 1) return 5;
+  if (index >= total - tail) return tail === 1 ? 12 : 6;
+  return 4;
+}
+
+/** Column span (of 12) at md: two columns; a last odd card fills the row. */
+function spanMd(index: number): number {
+  return total % 2 === 1 && index === total - 1 ? 12 : 6;
+}
+---
+
+<section id="skills" class="section" aria-labelledby="skills-title">
+  <div class="container">
+    <SectionHeading id="skills-title" eyebrow="03 / Skills" title="What I work with" />
+
+    <ul role="list" class="skills__grid grid-12">
+      {
+        skills.map((group, index) => (
+          <li
+            class:list={['skills__card', 'card', 'spotlight', { 'skills__card--primary': index < PRIMARY_COUNT }]}
+            style={`--span-md: ${spanMd(index)}; --span: ${spanLg(index)}; --reveal-i: ${index}`}
+            data-reveal
+          >
+            <span class="skills__index" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3 class="skills__title">{group.title}</h3>
+            <ul role="list" class="skills__items">
+              {group.items.map((item) => (
+                <li class="skills__item tag">{item}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Grid of group cards. Columns and spans come from .grid-12 (--span-md, --span). */
+  .skills__grid {
+    margin-block-start: var(--space-7);
+  }
+
+  /* One group card: index, title, chips. Cards of a row have equal height. */
+  .skills__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  /* Position number ("01"…). Decorative: the list order gives the same information. */
+  .skills__index {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-accent);
+  }
+
+  /* Chips: wrap to as many lines as needed. */
+  .skills__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-2);
+  }
+
+  /* A long item wraps inside the card; it never causes horizontal overflow. */
+  .skills__item {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  /* Primary groups: larger title and chips. */
+  .skills__card--primary .skills__title {
+    font-size: var(--step-3);
+  }
+
+  .skills__card--primary .skills__items {
+    gap: var(--space-3);
+  }
+
+  .skills__card--primary .skills__item {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--step-0);
+  }
+</style>

@@ -1,0 +1,93 @@
+---
+/*
+ * Technology marquee (effect E7). No props. Data: `site.marquee`.
+ * Uses the `.marquee` / `.marquee__track` utilities of motion.css.
+ * The track holds four copies of the list: the loop moves by -50%, so each
+ * half (two copies) must be wider than the viewport, also at 1920px and more.
+ * Only the first copy is exposed to assistive technology.
+ */
+import { getEntry } from 'astro:content';
+
+const site = (await getEntry('site', 'site'))!.data;
+const items = site.marquee;
+const hiddenCopies = [1, 2, 3];
+---
+
+<section class="tech-marquee" aria-label="Core technologies">
+  <div class="marquee">
+    <ul class="marquee__track" role="list">
+      {items.map((item) => <li class="tech-marquee__item">{item}</li>)}
+      {
+        hiddenCopies.map(() =>
+          items.map((item) => (
+            <li class="tech-marquee__item" aria-hidden="true">
+              {item}
+            </li>
+          )),
+        )
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Default = static state (motion off, or no JS): one compact, centered,
+     wrapped list. motion.css hides the duplicate items. */
+  .tech-marquee {
+    padding-block: var(--space-3);
+    border-block: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+  }
+
+  .tech-marquee .marquee {
+    --marquee-gap: var(--space-3);
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .tech-marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: var(--leading-snug);
+    white-space: nowrap;
+  }
+
+  /* Small accent separator before each item. */
+  .tech-marquee__item::before {
+    content: '';
+    flex: none;
+    width: var(--space-1);
+    height: var(--space-1);
+    background-color: var(--color-accent);
+    transform: rotate(45deg);
+  }
+
+  /* Motion on (gate: see motion.css): a full-width scrolling row. */
+  :global(html[data-motion='on']) .tech-marquee {
+    padding-block: var(--space-4);
+  }
+
+  /* Four copies make the track two times longer: keep the same speed. */
+  :global(html[data-motion='on']) .tech-marquee .marquee {
+    --marquee-gap: var(--space-5);
+    --marquee-duration: calc(var(--duration-marquee) * 2);
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  :global(html[data-motion='on']) .tech-marquee__item {
+    gap: var(--space-5);
+    font-size: var(--step-0);
+  }
+
+  :global(html[data-motion='on']) .tech-marquee__item::before {
+    width: var(--space-2);
+    height: var(--space-2);
+  }
+</style>

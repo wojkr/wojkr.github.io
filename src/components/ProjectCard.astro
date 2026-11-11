@@ -1,0 +1,169 @@
+---
+/*
+ * ProjectCard — one project in the bento grid.
+ * Props: `project` = one entry (`.data`) of the `projects` collection.
+ * The whole card is one link (stretched `::after` on the "View live project" link).
+ */
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>['data'];
+}
+
+const { project } = Astro.props;
+const isLarge = project.size === 'large';
+
+// Never request a width above the source width (no upscaled srcset candidates).
+const sourceWidth = project.image.width;
+const widths = [...new Set([360, 550, 720].map((w) => Math.min(w, sourceWidth)))];
+
+// Rendered image width: the card column minus the card padding.
+const sizes = isLarge
+  ? '(min-width: 64em) 520px, (min-width: 48em) 42vw, calc(100vw - 5rem)'
+  : '(min-width: 64em) 320px, (min-width: 48em) 42vw, calc(100vw - 5rem)';
+---
+
+<article class:list={['project-card', 'card', 'spotlight', 'hover-lift', `project-card--${project.size}`]}>
+  <div class="project-card__media img-zoom">
+    <Image
+      src={project.image}
+      alt={project.imageAlt}
+      class:list={{ 'is-centered': project.imagePosition === 'center' }}
+      widths={widths}
+      sizes={sizes}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div class="project-card__body">
+    <p class="eyebrow">{project.type}</p>
+    <h3 class="project-card__title">{project.title}</h3>
+    <p class="project-card__description text-muted">{project.description}</p>
+
+    <ul class="project-card__stack" role="list" aria-label="Technologies">
+      {project.stack.map((item) => <li class="tag">{item}</li>)}
+    </ul>
+
+    {
+      project.wakeUrl && (
+        <p class="project-card__note text-muted">
+          Hosted on a free tier. The server starts when you open this page; the first load can take about 30 seconds.
+        </p>
+      )
+    }
+
+    <a
+      class="project-card__link"
+      href={project.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`View live project: ${project.title} (opens in a new tab)`}
+    >
+      View live project
+      <Icon name="external" size={20} />
+    </a>
+  </div>
+</article>
+
+<style>
+  /* Card: image on top, text below; fills the grid cell. */
+  .project-card {
+    --card-zoom: 1.05; /* same value as .img-zoom in motion.css (no token exists) */
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    height: 100%;
+  }
+
+  /* Image frame: fixed aspect ratio, so there is no layout shift. */
+  .project-card__media {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface-2);
+  }
+
+  .project-card--large .project-card__media {
+    aspect-ratio: 16 / 10;
+  }
+
+  /* The square source is cropped; the top of the screenshot stays visible. */
+  .project-card__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  /* Data field `imagePosition: "center"`: keep the middle of the screenshot. */
+  .project-card__media :global(img.is-centered) {
+    object-position: center;
+  }
+
+  .project-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .project-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-2);
+  }
+
+  .project-card__note {
+    font-size: var(--step--1);
+  }
+
+  /* The one link of the card; sits at the bottom of the card. */
+  .project-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--touch-target);
+    margin-block-start: auto;
+    font-weight: var(--weight-bold);
+    white-space: nowrap;
+  }
+
+  /* Stretched link: the whole card is the click target. */
+  .project-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-raised);
+    border-radius: var(--radius-lg);
+  }
+
+  /* Keyboard focus: the ring goes around the whole card. */
+  .project-card__link:focus-visible {
+    outline: none;
+  }
+
+  .project-card__link:focus-visible::after {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* Hover on any part of the card gives the link its hover style. */
+  .project-card:hover .project-card__link {
+    color: var(--color-text);
+    text-decoration-thickness: 2px;
+  }
+
+  /* Keyboard focus inside the card: same lift and zoom as hover (motion on). */
+  :global(html[data-motion='on']) .project-card:focus-within {
+    transform: translateY(var(--lift-distance));
+  }
+
+  :global(html[data-motion='on']) .project-card:focus-within .project-card__media :global(img) {
+    transform: scale(var(--card-zoom));
+  }
+</style>

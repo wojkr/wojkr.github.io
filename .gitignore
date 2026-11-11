@@ -25,3 +25,10 @@ dist-ssr
 
 # src/assets
 toDos.txt
+
+# Local agent rules and temp files
+CLAUDE.local.md
+.tmp/
+
+# Astro generated types
+.astro/

@@ -1,0 +1,306 @@
+---
+/**
+ * Header — sticky site header with the primary navigation.
+ * Phones: a <details> disclosure (works without JS). md and up: an inline list.
+ * Links use "/#id" so they also work from the 404 page.
+ * Motion toggle: <button data-motion-toggle>, visible at all widths, hidden
+ * without JS. CSS selects its icon and label from `html[data-motion]`, so the
+ * first paint is correct; `nav.ts` handles the click and `aria-pressed`.
+ */
+import { getEntry } from 'astro:content';
+import Icon from './Icon.astro';
+
+const site = (await getEntry('site', 'site'))!.data;
+
+const links = [
+  { href: '/#about', label: 'About' },
+  { href: '/#experience', label: 'Experience' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/#projects', label: 'Projects' },
+];
+const contact = { href: '/#contact', label: 'Contact' };
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="header__logo" href="/#home">
+      WK<span class="visually-hidden"> — {site.name}, home</span>
+    </a>
+
+    <!-- Pressed = animations on. The name does not change; the state is aria-pressed. -->
+    <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="true" aria-label="Animations" title="Animations">
+      <span class="motion-toggle__icon motion-toggle__on"><Icon name="pause" size={20} /></span>
+      <span class="motion-toggle__icon motion-toggle__off"><Icon name="play" size={20} /></span>
+      <span class="motion-toggle__label"><span>Animations</span></span>
+    </button>
+
+    <nav class="nav" aria-label="Primary">
+      <!-- md and up -->
+      <ul class="nav__list nav__list--desktop" role="list">
+        {
+          links.map((link) => (
+            <li>
+              <a class="nav__link" href={link.href} data-nav-link>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a class="btn btn--primary nav__cta" href={contact.href} data-nav-link>{contact.label}</a>
+        </li>
+      </ul>
+
+      <!-- Phones: disclosure, no JS needed -->
+      <details class="nav__menu" data-nav-menu>
+        <summary class="nav__toggle">
+          <span class="visually-hidden">Menu</span>
+          <span class="nav__icon nav__icon--open"><Icon name="menu" size={24} /></span>
+          <span class="nav__icon nav__icon--close"><Icon name="close" size={24} /></span>
+        </summary>
+        <ul class="nav__list nav__panel" role="list">
+          {
+            links.map((link) => (
+              <li>
+                <a class="nav__link" href={link.href} data-nav-link>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a class="btn btn--primary nav__cta" href={contact.href} data-nav-link>{contact.label}</a>
+          </li>
+        </ul>
+      </details>
+    </nav>
+  </div>
+</header>
+
+<script>
+  import '../scripts/nav.ts';
+</script>
+
+<style>
+  /* Sticky translucent bar. The height equals --header-height. */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    height: var(--header-height);
+    background-color: var(--color-bg); /* fallback: no color-mix support */
+    background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
+    border-block-end: 1px solid var(--color-border);
+    -webkit-backdrop-filter: blur(var(--space-3));
+    backdrop-filter: blur(var(--space-3));
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    height: 100%;
+  }
+
+  /* Monogram. */
+  .header__logo {
+    display: inline-flex;
+    align-items: center;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-size: var(--step-2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-tight);
+    text-decoration: none;
+  }
+
+  .header__logo:hover {
+    color: var(--color-accent);
+  }
+
+  /* --- Motion toggle: icon button on phones, icon + text from lg. --- */
+  .motion-toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-width: var(--touch-target);
+    height: var(--touch-target);
+    margin-inline-start: auto; /* pushes the toggle and the nav to the right */
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-snug);
+    white-space: nowrap;
+  }
+
+  .motion-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  /* No JS: the toggle cannot work. */
+  :global(html:not(.js)) .motion-toggle {
+    display: none;
+  }
+
+  /* Text: hidden on phones. The two texts share one grid cell, so the button
+     keeps one width in the two states (no layout shift). */
+  .motion-toggle__label {
+    display: none;
+  }
+
+  .motion-toggle__label > span {
+    grid-area: 1 / 1;
+  }
+
+  /* State from <html data-motion>: motion off (default) shows "play" and
+     "Motion off"; motion on shows "pause" and "Motion on". */
+  .motion-toggle__icon.motion-toggle__on,
+  :global(html[data-motion='on']) .motion-toggle__icon.motion-toggle__off {
+    display: none;
+  }
+
+  :global(html[data-motion='on']) .motion-toggle__icon.motion-toggle__on {
+    display: block;
+  }
+
+  .motion-toggle__label > .motion-toggle__on,
+  :global(html[data-motion='on']) .motion-toggle__label > .motion-toggle__off {
+    visibility: hidden;
+  }
+
+  :global(html[data-motion='on']) .motion-toggle__label > .motion-toggle__on {
+    visibility: visible;
+  }
+
+  /* --- Links (both lists) --- */
+  .nav__link {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+  }
+
+  .nav__link:hover {
+    color: var(--color-text);
+  }
+
+  /* Section in view (set by nav.ts). */
+  .nav__link[aria-current='true'] {
+    color: var(--color-accent);
+  }
+
+  /* Small primary button. */
+  .nav__cta {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--step--1);
+  }
+
+  /* --- Desktop list: hidden on phones --- */
+  .nav__list--desktop {
+    display: none;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--step--1);
+  }
+
+  .nav__list--desktop .nav__cta {
+    margin-inline-start: var(--space-3);
+  }
+
+  /* --- Mobile disclosure --- */
+  .nav__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  /* Remove the default disclosure triangle. */
+  .nav__toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav__toggle:hover {
+    border-color: var(--color-accent);
+  }
+
+  /* Closed: menu icon. Open: close icon. */
+  .nav__icon--close,
+  .nav__menu[open] .nav__icon--open {
+    display: none;
+  }
+
+  .nav__menu[open] .nav__icon--close {
+    display: block;
+  }
+
+  /* Panel under the header bar, full width. */
+  .nav__panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-height: calc(100vh - var(--header-height));
+    max-height: calc(100dvh - var(--header-height));
+    padding: var(--space-4) var(--gutter) var(--space-5);
+    overflow-y: auto;
+    background-color: var(--color-surface-1);
+    border-block-end: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav__panel .nav__link {
+    padding-inline: 0;
+    font-size: var(--step-1);
+  }
+
+  .nav__panel .nav__cta {
+    margin-block-start: var(--space-3);
+    width: 100%;
+  }
+
+  /* md and up: inline list, no disclosure. */
+  @media (min-width: 48em) {
+    .nav__list--desktop {
+      display: flex;
+    }
+
+    .nav__menu {
+      display: none;
+    }
+  }
+
+  /* lg and up: the toggle shows its text. */
+  @media (min-width: 64em) {
+    .motion-toggle {
+      padding-inline: var(--space-3);
+    }
+
+    .motion-toggle__label {
+      display: grid;
+    }
+  }
+</style>

@@ -1,0 +1,216 @@
+---
+/*
+ * Contact section: a form that sends mail through Basin, plus the visit ping.
+ * Without JS the browser posts the form to Basin (form-encoded) and Basin shows its own page.
+ * With JS, `contact.ts` validates the fields and posts JSON; `ping.ts` sends the visit notification.
+ */
+import { getEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import SectionHeading from './SectionHeading.astro';
+import SocialLinks from './SocialLinks.astro';
+
+const site = (await getEntry('site', 'site'))!.data;
+const basinUrl = site.contact.basinUrl;
+---
+
+<section id="contact" class="section" aria-labelledby="contact-title" data-basin-url={basinUrl}>
+  <div class="container">
+    <SectionHeading
+      id="contact-title"
+      eyebrow="05 / Contact"
+      title="Let's talk"
+      lead="Send a message. I usually reply within a few days."
+    />
+
+    <div class="contact">
+      <div class="contact__aside" data-reveal>
+        <p class="contact__invite">
+          Do you have a role, a project, or a question? Use the form and your message goes directly
+          to my inbox.
+        </p>
+        <p class="eyebrow contact__social-label">Or find me on</p>
+        <SocialLinks labels />
+      </div>
+
+      <div class="card contact__card" data-reveal style="--reveal-i: 1">
+        <form
+          class="contact-form"
+          method="POST"
+          action={basinUrl}
+          accept-charset="UTF-8"
+          data-contact-form
+        >
+          <div class="field">
+            <label class="field__label" for="contact-name">Name</label>
+            <input
+              class="field__input"
+              id="contact-name"
+              name="name"
+              type="text"
+              required
+              maxlength="100"
+              autocomplete="name"
+              aria-describedby="contact-name-error"
+              data-label="your name"
+            />
+            <p class="field__error" id="contact-name-error" hidden></p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="contact-email">Email</label>
+            <input
+              class="field__input"
+              id="contact-email"
+              name="email"
+              type="email"
+              required
+              maxlength="254"
+              autocomplete="email"
+              inputmode="email"
+              aria-describedby="contact-email-error"
+              data-label="your email address"
+            />
+            <p class="field__error" id="contact-email-error" hidden></p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="contact-message">Message</label>
+            <textarea
+              class="field__input"
+              id="contact-message"
+              name="message"
+              required
+              maxlength="2000"
+              rows="6"
+              aria-describedby="contact-message-error"
+              data-label="a message"></textarea>
+            <p class="field__error" id="contact-message-error" hidden></p>
+          </div>
+
+          <!-- Honeypot (Basin `_gotcha`). People do not see it. Bots fill it; Basin then marks the submission as spam. -->
+          <div class="visually-hidden" aria-hidden="true">
+            <label for="contact-gotcha">Leave this field empty</label>
+            <input id="contact-gotcha" name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="contact-form__footer">
+            <button class="btn btn--primary" type="submit" data-contact-submit>
+              Send message
+              <Icon name="send" size={20} />
+            </button>
+
+            <p
+              class="contact-form__status"
+              role="status"
+              aria-live="polite"
+              data-contact-status
+              data-state="idle"
+            >
+              <span class="contact-form__status-icon" data-status-icon="success" hidden>
+                <Icon name="check" size={20} />
+              </span>
+              <span class="contact-form__status-icon" data-status-icon="error" hidden>
+                <Icon name="alert" size={20} />
+              </span>
+              <span data-status-text></span>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/contact.ts';
+  import '../scripts/ping.ts';
+</script>
+
+<style>
+  /* Focus after a failed submit: keep the label clear of the sticky header. */
+  .field__input {
+    scroll-margin-top: calc(var(--header-height) + var(--space-8));
+  }
+
+  .contact {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .contact__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  .contact__invite {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+  }
+
+  .contact__social-label {
+    margin-top: var(--space-4);
+  }
+
+  .contact__card {
+    min-width: 0;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .contact-form textarea {
+    resize: vertical;
+  }
+
+  .contact-form__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .contact-form__status {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin: 0;
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+    color: var(--color-text-muted);
+  }
+
+  .contact-form__status[data-state='idle'] {
+    display: none;
+  }
+
+  .contact-form__status[data-state='success'] {
+    color: var(--color-success);
+  }
+
+  .contact-form__status[data-state='error'] {
+    color: var(--color-error);
+  }
+
+  .contact-form__status-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .contact-form__status-icon[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 64em) {
+    .contact {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-8);
+      align-items: start;
+    }
+  }
+</style>

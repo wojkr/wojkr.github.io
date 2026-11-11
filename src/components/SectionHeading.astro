@@ -1,0 +1,49 @@
+---
+/**
+ * SectionHeading — eyebrow + <h2> (+ optional lead) at the top of a section.
+ * Usage: <SectionHeading id="experience-title" eyebrow="02 / Experience" title="Where I have worked" />
+ * `id` is the id of the <h2>; the section points to it with aria-labelledby.
+ */
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  lead?: string;
+}
+
+const { id, eyebrow, title, lead } = Astro.props;
+---
+
+<header class="section-heading" data-reveal>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2 id={id}>{title}</h2>
+  {lead && <p class="lead">{lead}</p>}
+</header>
+
+<style>
+  /* Generous space between the heading block and the section content. */
+  .section-heading {
+    margin-block-end: var(--space-7);
+  }
+
+  .eyebrow {
+    margin-block-end: var(--space-3);
+  }
+
+  /* Large display title. */
+  h2 {
+    font-size: var(--step-5);
+  }
+
+  .lead {
+    margin-block-start: var(--space-4);
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 48em) {
+    .section-heading {
+      margin-block-end: var(--space-8);
+    }
+  }
+</style>

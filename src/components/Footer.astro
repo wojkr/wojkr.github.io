@@ -1,0 +1,61 @@
+---
+/** Footer — social links, back-to-top monogram, copyright with the build year. */
+import { getEntry } from 'astro:content';
+import SocialLinks from './SocialLinks.astro';
+
+const site = (await getEntry('site', 'site'))!.data;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <a class="footer__top" href="#top">WK<span class="visually-hidden"> — back to top</span></a>
+    <SocialLinks />
+    <p class="footer__copy">&copy; {year} {site.name}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: var(--space-6);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  /* Phones: stacked and centered. */
+  .footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .footer__top {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-size: var(--step-1);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+  }
+
+  .footer__top:hover {
+    color: var(--color-accent);
+  }
+
+  .footer__copy {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  /* md and up: one row. */
+  @media (min-width: 48em) {
+    .footer__inner {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+</style>

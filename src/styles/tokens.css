@@ -1,0 +1,149 @@
+/* ==========================================================================
+   tokens.css — design tokens (single source of truth)
+
+   HOW TO USE
+   - Use tokens only through var(): `color: var(--color-text)`.
+   - Do not write raw colors, durations, or z-index numbers in components.
+   - Theme: dark purple only. There is no light theme.
+   - Safe text/background pairs (WCAG 2.1 AA, all >= 4.5:1):
+       --color-text, --color-text-muted, --color-accent, --color-link,
+       --color-error, --color-success  on  --color-bg / -surface-1 / -surface-2.
+       --color-accent-contrast  on  --color-accent (and on --color-accent-hover).
+   - --color-border is decorative (below 3:1). Use --color-border-strong for
+     borders that identify a control (inputs, ghost buttons).
+   - Type: --step--1 (small) to --step-6 (hero). Body text is --step-0.
+   - Space: --space-1 (4px) to --space-11 (160px). --space-section is fluid.
+   - Breakpoints (media queries cannot read variables, so copy the values):
+       md = 48em (768px), lg = 64em (1024px).
+   ========================================================================== */
+
+:root {
+  /* Tells the browser to render native UI (scrollbars, inputs) dark. */
+  color-scheme: dark;
+
+  /* --- Colors: backgrounds and surfaces (darkest to lightest) --- */
+  --color-bg: #1a1426; /* page background */
+  --color-surface-1: #2c233d; /* cards, header, inputs */
+  --color-surface-2: #3a2f50; /* raised or hovered surfaces, tags */
+
+  /* --- Colors: borders --- */
+  --color-border: #4b3f64; /* decorative hairline */
+  --color-border-strong: #8f82ab; /* control boundary, >= 3:1 on all surfaces */
+
+  /* --- Colors: text --- */
+  --color-text: #f4effa; /* body and headings */
+  --color-text-muted: #bdb3cf; /* secondary text */
+
+  /* --- Colors: brand --- */
+  --color-accent: #e79ce1; /* the one accent (pink) */
+  --color-accent-hover: #f2b8ec; /* accent, hover state */
+  --color-accent-contrast: #1a1426; /* text on accent */
+  --color-link: #77c5f9; /* support color (blue): links */
+  --color-focus: #77c5f9; /* focus ring */
+
+  /* --- Colors: status --- */
+  --color-error: #ff9a9b; /* #F05D5E family, lightened for contrast */
+  --color-success: #7fe0a8;
+
+  /* --- Colors: translucent effects (glows, mesh blobs, overlays) --- */
+  --color-accent-glow: rgb(231 156 225 / 0.16); /* spotlight glow */
+  --color-accent-soft: rgb(231 156 225 / 0.12); /* tinted fills, ghost hover */
+  --color-selection: rgb(231 156 225 / 0.35); /* ::selection background */
+  --color-mesh-1: rgb(231 156 225 / 0.28); /* mesh blob: pink */
+  --color-mesh-2: rgb(119 197 249 / 0.2); /* mesh blob: blue */
+  --color-mesh-3: rgb(124 92 196 / 0.35); /* mesh base: purple */
+  --color-mask: #000; /* opaque stop for mask gradients (not painted) */
+
+  /* --- Font families --- */
+  --font-heading: 'Unbounded Variable', 'Unbounded', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* --- Fluid type scale (320px to 1200px viewport) --- */
+  --step--1: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem); /* 13 -> 14px: labels, tags */
+  --step-0: clamp(1rem, 0.955rem + 0.23vw, 1.125rem); /* 16 -> 18px: body */
+  --step-1: clamp(1.125rem, 1.057rem + 0.34vw, 1.3125rem); /* 18 -> 21px: lead, h4 */
+  --step-2: clamp(1.3125rem, 1.199rem + 0.57vw, 1.625rem); /* 21 -> 26px: h3 */
+  --step-3: clamp(1.5rem, 1.295rem + 1.02vw, 2.0625rem); /* 24 -> 33px */
+  --step-4: clamp(1.75rem, 1.386rem + 1.82vw, 2.75rem); /* 28 -> 44px: h2 */
+  --step-5: clamp(2.125rem, 1.534rem + 2.95vw, 3.75rem); /* 34 -> 60px: h1 */
+  --step-6: clamp(2.5rem, 1.5rem + 5vw, 5.25rem); /* 40 -> 84px: hero display */
+
+  /* --- Line heights --- */
+  --leading-tight: 1.1; /* display headings */
+  --leading-snug: 1.3; /* small headings, buttons */
+  --leading-normal: 1.65; /* body text */
+
+  /* --- Letter spacing --- */
+  --tracking-tight: -0.02em; /* large headings */
+  --tracking-wide: 0.12em; /* uppercase mono labels */
+
+  /* --- Font weights (both fonts are variable) --- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* --- Spacing scale (4px base) --- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.5rem; /* 24px */
+  --space-6: 2rem; /* 32px */
+  --space-7: 3rem; /* 48px */
+  --space-8: 4rem; /* 64px */
+  --space-9: 6rem; /* 96px */
+  --space-10: 8rem; /* 128px */
+  --space-11: 10rem; /* 160px */
+  --space-section: clamp(4rem, 2.5rem + 7.5vw, 9rem); /* vertical padding of .section */
+
+  /* --- Radius --- */
+  --radius-sm: 0.375rem; /* tags, inputs */
+  --radius-md: 0.75rem; /* buttons, small cards */
+  --radius-lg: 1.25rem; /* cards */
+  --radius-pill: 999px;
+
+  /* --- Shadows (dark theme: deep and soft) --- */
+  --shadow-sm: 0 1px 2px rgb(8 5 14 / 0.4);
+  --shadow-md: 0 8px 24px -8px rgb(8 5 14 / 0.6);
+  --shadow-lg: 0 24px 56px -16px rgb(8 5 14 / 0.7);
+  --shadow-glow: 0 0 40px -8px rgb(231 156 225 / 0.35); /* accent glow */
+
+  /* --- Layout --- */
+  --container-max: 75rem; /* 1200px max content width */
+  --gutter: clamp(1rem, 4vw, 2rem); /* page side padding, 16px on phones */
+  --grid-gap: clamp(1rem, 2.5vw, 2rem); /* gap of .grid-12 */
+  --header-height: 4.5rem; /* sticky header height, used by scroll-padding-top */
+  --measure: 65ch; /* max line length of running text */
+  --touch-target: 2.75rem; /* 44px minimum interactive size */
+
+  /* --- Focus ring --- */
+  --focus-width: 3px;
+  --focus-offset: 3px;
+
+  /* --- Z-index layers --- */
+  --z-behind: -1; /* decorative backgrounds */
+  --z-base: 0;
+  --z-raised: 1; /* content above decoration */
+  --z-header: 100; /* sticky header */
+  --z-overlay: 200; /* menus, dialogs */
+  --z-skip-link: 300; /* always on top */
+
+  /* --- Motion: durations --- */
+  --duration-fast: 150ms; /* hover color changes */
+  --duration-base: 300ms; /* lifts, fades */
+  --duration-slow: 700ms; /* scroll reveals */
+  --duration-mesh: 24s; /* one mesh blob cycle */
+  --duration-marquee: 40s; /* one marquee loop */
+  --reveal-stagger: 80ms; /* delay step between staggered reveals */
+
+  /* --- Motion: easings --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* default: fast start, soft stop */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* loops, back-and-forth */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* small overshoot */
+
+  /* --- Motion: distances --- */
+  --reveal-distance: 1.5rem; /* travel of a scroll reveal */
+  --lift-distance: -0.25rem; /* travel of .hover-lift */
+}

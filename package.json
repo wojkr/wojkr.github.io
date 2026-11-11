@@ -1,38 +1,23 @@
 {
-  "homepage": "http://wojkr.github.io/portfolio-vite",
-  "name": "portfolio-vite",
+  "name": "wojkr-portfolio",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "scripts": {
-    "dev": "vite",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "check": "npm run build && npm run preview"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
   },
   "dependencies": {
-    "framer-motion": "^10.0.0",
-    "gh-pages": "^5.0.0",
-    "react": "^18.2.0",
-    "react-anchor-link-smooth-scroll": "^1.0.12",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.43.5",
-    "react-icons": "^4.8.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react-swc": "^3.3.2",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.45.0",
-    "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.2.7",
-    "vite": "^4.4.5"
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/unbounded": "^5.3.0",
+    "astro": "^7.4.10",
+    "typescript": "^6.0.3"
   }
 }

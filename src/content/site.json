@@ -1,0 +1,55 @@
+{
+  "name": "Wojciech Krupa",
+  "headline": "Software Engineer — .NET, WPF, robotics",
+  "summary": "Software engineer at Bee Robotics who builds WPF interfaces and control routines for robotic systems. Background in .NET through EPAM's training and internship programme, plus full-stack web projects.",
+  "about": "B.Eng. in Aeronautics and Space Technology (aircraft engines), and a music teacher certified by Yamaha Music Europe. I bring an engineer's rigour and a musician's ear for detail to software.",
+  "profileImage": "../assets/images/profile.webp",
+  "profileImageAlt": "Portrait of Wojciech Krupa, smiling, in a dark blazer and a light blue shirt, on a pink circle.",
+  "links": {
+    "linkedin": "https://www.linkedin.com/in/wojciech-w-krupa/",
+    "github": "https://github.com/wojkr",
+    "projects": "https://wojkr.github.io/projects/"
+  },
+  "projectsShowcaseUrl": "https://wojkr.github.io/projects/",
+  "contact": {
+    "basinUrl": "https://usebasin.com/f/4d404e5170ee"
+  },
+  "terminal": {
+    "prompt": "WK @ github.com/wojkr",
+    "messages": [
+      {
+        "title": "B.Eng",
+        "lines": ["Aeronautics and Space Technology", "Major in Aircraft Engines"]
+      },
+      {
+        "title": "Skilled In",
+        "lines": ["C#, .NET, ASP.NET, WPF", "Python, C, C++", "MS SQL, MongoDB, EF"]
+      },
+      {
+        "title": "Musician",
+        "lines": ["Yamaha Music Europe Teacher"]
+      },
+      {
+        "title": "Communicator",
+        "lines": ["Former Assistant Manager", "Client Relations Consultant"]
+      }
+    ]
+  },
+  "marquee": [
+    "C#",
+    ".NET",
+    "ASP.NET",
+    "WPF",
+    "Python",
+    "C++",
+    "MS SQL",
+    "MongoDB",
+    "Entity Framework",
+    "React",
+    "Next.js",
+    "Node.js",
+    "TypeScript",
+    "xUnit",
+    "Git"
+  ]
+}

@@ -1,0 +1,168 @@
+---
+/*
+ * Terminal card with a typewriter (effect E2). No props. Data: `site.terminal`.
+ * - No JS, or motion off: a static list of all messages.
+ * - `html.js[data-motion='on']`: the list is visually hidden (it stays in the
+ *   accessibility tree) and `src/scripts/terminal.ts` types one line at a time.
+ * The two states are selected in CSS, before the first paint, so the script
+ * causes no layout shift.
+ */
+import { getEntry } from 'astro:content';
+
+const site = (await getEntry('site', 'site'))!.data;
+const { prompt, messages } = site.terminal;
+---
+
+<div class="terminal" role="group" aria-label="Quick facts" data-terminal data-messages={JSON.stringify(messages)}>
+  <div class="terminal__bar">
+    <span class="terminal__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span class="terminal__prompt">{prompt}</span>
+  </div>
+  <div class="terminal__body">
+    <ul class="terminal__static" role="list">
+      {
+        messages.map((message) => (
+          <li>
+            <strong>{message.title}</strong> {message.lines.join(' · ')}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="terminal__live" aria-hidden="true">
+      <span class="terminal__sigil">$</span>
+      <span class="terminal__title" data-terminal-title></span><span data-terminal-line></span><span
+        class="terminal__cursor"></span>
+    </p>
+  </div>
+</div>
+
+<script>
+  import '../scripts/terminal.ts';
+</script>
+
+<style>
+  /* Card: mono text on a raised surface. */
+  .terminal {
+    overflow: hidden;
+    background-color: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: var(--leading-normal);
+    text-align: start;
+  }
+
+  /* Window bar: three dots and the prompt. */
+  .terminal__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    background-color: var(--color-surface-2);
+    border-block-end: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+
+  .terminal__dots {
+    display: flex;
+    flex: none;
+    gap: var(--space-2);
+  }
+
+  .terminal__dots span {
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: 50%;
+    background-color: var(--color-border-strong);
+  }
+
+  .terminal__dots span:first-child {
+    background-color: var(--color-accent);
+  }
+
+  .terminal__dots span:last-child {
+    background-color: var(--color-link);
+  }
+
+  .terminal__prompt {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .terminal__body {
+    position: relative;
+    padding: var(--space-4);
+  }
+
+  /* Static state: all messages. */
+  .terminal__static {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  .terminal__static strong {
+    color: var(--color-accent);
+  }
+
+  /* Animated line: off by default. */
+  .terminal__live {
+    display: none;
+    max-width: none;
+    /* Two lines: the longest text wraps one time at a width of 360px. */
+    min-height: calc(2em * var(--leading-normal));
+    min-height: 2lh;
+    overflow-wrap: anywhere;
+    color: var(--color-text);
+  }
+
+  .terminal__sigil {
+    color: var(--color-text-muted);
+    margin-inline-end: 1ch;
+  }
+
+  .terminal__title {
+    color: var(--color-accent);
+    font-weight: var(--weight-bold);
+  }
+
+  .terminal__cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1em;
+    margin-inline-start: 0.15em;
+    vertical-align: text-bottom;
+    background-color: var(--color-accent);
+  }
+
+  /* Animated state: JS runs and motion is on (gate: see motion.css). */
+  :global(html.js[data-motion='on']) .terminal__static {
+    /* Visually hidden; assistive technology still reads the full list. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  :global(html.js[data-motion='on']) .terminal__live {
+    display: block;
+  }
+
+  /* Blink: opacity only. */
+  :global(html.js[data-motion='on']) .terminal__cursor {
+    animation: terminal-blink calc(var(--duration-slow) * 1.5) steps(1, end) infinite;
+  }
+
+  @keyframes terminal-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>

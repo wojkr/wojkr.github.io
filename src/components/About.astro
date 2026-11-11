@@ -1,0 +1,26 @@
+---
+/* About section. No props. Data: `site.about`. */
+import { getEntry } from 'astro:content';
+import SectionHeading from './SectionHeading.astro';
+
+const site = (await getEntry('site', 'site'))!.data;
+---
+
+<section id="about" class="section" aria-labelledby="about-title">
+  <div class="container">
+    <SectionHeading id="about-title" eyebrow="01 / About" title="Engineer by training, builder by choice" />
+    <p class="about__statement" data-reveal>{site.about}</p>
+  </div>
+</section>
+
+<style>
+  /* One large, quiet statement: about 8 words on a line. */
+  .about__statement {
+    max-width: 42ch;
+    color: var(--color-text);
+    font-size: var(--step-3);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
+  }
+</style>

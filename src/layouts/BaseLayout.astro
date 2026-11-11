@@ -1,0 +1,74 @@
+---
+/**
+ * BaseLayout — page shell: <head>, skip link, header, <main id="main">, footer.
+ * Usage: <BaseLayout title="…" description="…">page content</BaseLayout>
+ */
+import { getEntry } from 'astro:content';
+import '@fontsource-variable/unbounded/wght.css';
+import '@fontsource-variable/manrope/wght.css';
+import '../styles/global.css';
+import headingFontUrl from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url';
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  /** Default: "<site.name> — Software Engineer". */
+  title?: string;
+  /** Default: `site.summary`. */
+  description?: string;
+  /** true = tell search engines not to index the page. */
+  noindex?: boolean;
+}
+
+const site = (await getEntry('site', 'site'))!.data;
+const {
+  title = `${site.name} — Software Engineer`,
+  description = site.summary,
+  noindex = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Marks that JS runs. The hidden start state of scroll reveals needs it.
+         Sets the motion state before the first paint (see scripts/motion.ts):
+         the stored choice wins; if there is none, the system setting decides. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      (function () {
+        var motion = null;
+        try {
+          motion = localStorage.getItem('motion');
+        } catch (e) {}
+        if (motion !== 'on' && motion !== 'off') {
+          motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : 'on';
+        }
+        document.documentElement.setAttribute('data-motion', motion);
+      })();
+      // Failsafe: if the effect scripts do not load, show all content again.
+      setTimeout(function () {
+        if (!document.documentElement.hasAttribute('data-fx')) {
+          document.documentElement.classList.remove('js');
+        }
+      }, 4000);
+    </script>
+    <link rel="preload" href={headingFontUrl} as="font" type="font/woff2" crossorigin />
+    <Seo title={title} description={description} noindex={noindex} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/reveal.ts';
+      import '../scripts/spotlight.ts';
+    </script>
+  </body>
+</html>
