@@ -1,0 +1,57 @@
+---
+/**
+ * Seo — all <head> metadata: title, description, canonical, Open Graph,
+ * Twitter card, theme color, favicons, sitemap, JSON-LD Person.
+ * Used by BaseLayout only.
+ */
+import { getEntry } from 'astro:content';
+
+interface Props {
+  title: string;
+  description: string;
+  /** true = `noindex` and no canonical link (404 page). */
+  noindex?: boolean;
+}
+
+const { title, description, noindex = false } = Astro.props;
+const site = (await getEntry('site', 'site'))!.data;
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+const ogImage = new URL('/og.png', siteUrl).href;
+const jobTitle = 'Software Engineer';
+
+/* Must equal --color-bg in tokens.css (meta tags cannot read CSS variables). */
+const themeColor = '#1a1426';
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle,
+  url: siteUrl.href,
+  sameAs: [site.links.linkedin, site.links.github],
+}).replace(/</g, '\\u003c');
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+<meta name="theme-color" content={themeColor} />
+
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${site.name} — ${jobTitle}`} />
+<meta name="twitter:card" content="summary_large_image" />
+
+<script is:inline type="application/ld+json" set:html={jsonLd} />

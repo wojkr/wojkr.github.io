@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+
+const site = (await getEntry('site', 'site'))!.data;
+---
+
+<BaseLayout title={`Page not found — ${site.name}`} noindex>
+  <section class="section not-found" aria-labelledby="not-found-title">
+    <div class="container not-found__inner">
+      <p class="not-found__code" aria-hidden="true">404</p>
+      <h1 id="not-found-title">Page not found</h1>
+      <p class="text-muted">This page does not exist. The link is wrong or the page moved.</p>
+      <a class="btn btn--primary" href="/">Back to the home page</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+    text-align: center;
+  }
+
+  /* Large display number. */
+  .not-found__code {
+    font-family: var(--font-heading);
+    font-size: calc(var(--step-6) * 2);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-accent);
+  }
+
+  h1 {
+    font-size: var(--step-3);
+  }
+</style>

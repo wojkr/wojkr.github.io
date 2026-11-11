@@ -1,0 +1,65 @@
+---
+/**
+ * SocialLinks — icon links to LinkedIn, GitHub, and the live projects page.
+ * Data: `site.links`. Usage: <SocialLinks /> or <SocialLinks labels />.
+ */
+import { getEntry } from 'astro:content';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  /** Show the text label next to each icon. Default false (icon only). */
+  labels?: boolean;
+}
+
+const { labels = false } = Astro.props;
+const site = (await getEntry('site', 'site'))!.data;
+
+const links: { href: string; label: string; icon: IconName }[] = [
+  { href: site.links.linkedin, label: 'LinkedIn profile', icon: 'linkedin' },
+  { href: site.links.github, label: 'GitHub profile', icon: 'github' },
+  { href: site.links.projects, label: 'Live projects page', icon: 'broadcast' },
+];
+---
+
+<ul class="social-links" role="list">
+  {
+    links.map((link) => (
+      <li>
+        <a class="social-links__link" href={link.href} target="_blank" rel="noopener noreferrer">
+          <Icon name={link.icon} size={22} />
+          <span class:list={[!labels && 'visually-hidden']}>{link.label}</span>
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* 44px touch target. */
+  .social-links__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+  }
+
+  .social-links__link:hover {
+    color: var(--color-accent);
+  }
+</style>
