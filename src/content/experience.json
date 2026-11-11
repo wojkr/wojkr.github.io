@@ -1,0 +1,82 @@
+[
+  {
+    "id": "bee-robotics-software-engineer",
+    "order": 1,
+    "group": "main",
+    "role": "Software Engineer",
+    "company": "Bee Robotics",
+    "start": "2025-04",
+    "end": null,
+    "bullets": [
+      "Design and implement user interfaces with WPF.",
+      "Develop scripts and routines for robotic systems.",
+      "Provide support and troubleshooting across the software stack.",
+      "Maintain existing projects in Python, C, C++, and WPF."
+    ]
+  },
+  {
+    "id": "epam-dotnet-developer-intern",
+    "order": 2,
+    "group": "main",
+    "role": ".NET Developer Intern",
+    "company": "EPAM Systems",
+    "start": "2024-10",
+    "end": "2025-07",
+    "bullets": [
+      "Developed a large-scale project under mentor supervision.",
+      "Completed a rigorous, hands-on programme designed by EPAM's senior .NET engineers."
+    ]
+  },
+  {
+    "id": "epam-dotnet-training",
+    "order": 3,
+    "group": "main",
+    "role": ".NET Training",
+    "company": "EPAM Systems",
+    "start": "2024-02",
+    "end": "2024-07",
+    "bullets": [
+      "Finished in the top 5 of approximately 100 students.",
+      "Passed the final technical interview with the score \"Great candidate\" (100%).",
+      "Completed the programme with a 97% overall score."
+    ],
+    "tags": [
+      "SQL",
+      "ADO.NET",
+      "Entity Framework & EF Core",
+      "Design Patterns and Application Architecture",
+      "C# Advanced",
+      "ASP.NET"
+    ]
+  },
+  {
+    "id": "welcome-furniture-cad-technician",
+    "order": 4,
+    "group": "earlier",
+    "role": "CAD Technician",
+    "company": "Welcome Furniture",
+    "start": "2024-09",
+    "end": "2025-04",
+    "bullets": ["Created 3D furniture models and room views with AutoCAD and iMOS."]
+  },
+  {
+    "id": "celtic-royal-hotel-assistant-manager",
+    "order": 5,
+    "group": "earlier",
+    "role": "Assistant Manager",
+    "company": "Celtic Royal Hotel",
+    "start": "2020-10",
+    "end": "2023-06",
+    "bullets": ["Served as duty manager; trained and led a team of 8."]
+  },
+  {
+    "id": "everest-finance-customer-advisor",
+    "order": 6,
+    "group": "earlier",
+    "role": "Customer Advisor",
+    "company": "Everest Finance",
+    "start": "2015-09",
+    "end": "2019-03",
+    "bullets": ["Managed a portfolio of 31 clients at peak."]
+  }
+]

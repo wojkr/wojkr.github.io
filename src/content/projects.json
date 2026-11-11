@@ -1,0 +1,64 @@
+[
+  {
+    "id": "ride-rite",
+    "order": 1,
+    "title": "Ride Rite",
+    "type": "eCommerce",
+    "stack": ["React", "MUI", "Redux", "Strapi CMS", "Stripe"],
+    "description": "Full-stack e-commerce app with Strapi CMS and Stripe payments. Formik and Yup handle validation.",
+    "link": "https://wojkr.github.io/projects/#5",
+    "wakeUrl": "https://ride-rite-server.onrender.com/api/items",
+    "size": "large",
+    "image": "../assets/images/project-ride-rite.webp",
+    "imageAlt": "Ride Rite home page: a \"Summer Sale\" banner over a photo of a cyclist, a welcome text, and a row of featured bicycles."
+  },
+  {
+    "id": "nomad-hive",
+    "order": 2,
+    "title": "Nomad Hive",
+    "type": "Marketplace App",
+    "stack": ["React", "Next.js", "Tailwind", "Prisma", "MongoDB"],
+    "description": "Marketplace that connects travellers with short-term homestays and experiences worldwide.",
+    "link": "https://wojkr.github.io/projects/#1",
+    "size": "large",
+    "image": "../assets/images/project-nomad-hive.webp",
+    "imageAlt": "Nomad Hive listings page: a search bar, a row of category icons, and a grid of homestay cards with photos, locations, and prices per night."
+  },
+  {
+    "id": "sweetapp",
+    "order": 3,
+    "title": "SweetApp",
+    "type": "Rating Website",
+    "stack": ["Node.js", "Express", "MongoDB", "Passport"],
+    "description": "Full-stack site with an interactive map, authentication, user accounts, and dessert listings with ratings and reviews.",
+    "link": "https://wojkr.github.io/projects/#2",
+    "wakeUrl": "https://sweet-app-try.onrender.com/desserts",
+    "size": "small",
+    "image": "../assets/images/project-sweetapp.webp",
+    "imageAlt": "SweetApp browse page: a map of the United States with dessert location markers above a grid of dessert cards with photos."
+  },
+  {
+    "id": "block-breaker",
+    "order": 4,
+    "title": "Block Breaker",
+    "type": "Game",
+    "stack": ["JavaScript", "CSS"],
+    "description": "Game built from scratch: 10 levels, 11 bonus types, 7 game modes, and touch controls.",
+    "link": "https://wojkr.github.io/projects/#3",
+    "size": "small",
+    "image": "../assets/images/project-block-breaker.webp",
+    "imageAlt": "Block Breaker game in play: rows of coloured blocks, a paddle and balls on a grey board, and a side panel with level, points, and active bonuses."
+  },
+  {
+    "id": "solar-system",
+    "order": 5,
+    "title": "Solar System",
+    "type": "Animation",
+    "stack": ["CSS", "Sass"],
+    "description": "A solar system animated with CSS only. No JavaScript.",
+    "link": "https://wojkr.github.io/projects/#4",
+    "size": "small",
+    "image": "../assets/images/project-solar-system.webp",
+    "imageAlt": "Solar System animation: a glowing orange sun with planets in orbit, including Saturn with its rings and Jupiter, on a starry background."
+  }
+]
