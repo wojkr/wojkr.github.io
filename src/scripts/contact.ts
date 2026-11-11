@@ -26,7 +26,10 @@ function validate(field: Field): string {
 
   // Whitespace only is empty. Any Unicode text is valid for the name.
   if (validity.valueMissing || field.value.trim() === '') return `Enter ${label}.`;
-  if (validity.typeMismatch) return 'Enter a valid email address, for example name@example.com.';
+  // `type="email"` accepts "a@b". Also require a dot in the domain part.
+  if (validity.typeMismatch || (field.type === 'email' && !/@[^@\s]+\.[^@\s.]+$/.test(field.value.trim()))) {
+    return 'Enter a valid email address, with an @ sign and a domain.';
+  }
   if (validity.tooLong) return `Use ${field.maxLength} characters or fewer.`;
   if (!validity.valid) return field.validationMessage || `Enter ${label}.`;
   return '';
@@ -128,6 +131,8 @@ function initContactForm(form: HTMLFormElement): void {
     } finally {
       sending = false;
       submit.disabled = false;
+      // The disabled button lost focus. Give it back, so keyboard users keep their place.
+      if (document.activeElement === document.body) submit.focus();
     }
   });
 }
