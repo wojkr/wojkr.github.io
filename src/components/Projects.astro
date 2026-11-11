@@ -1,0 +1,88 @@
+---
+/*
+ * Projects — section 04: bento grid of project cards (effect E5).
+ * Data: `projects` collection (sorted by `order`) and `site.projectsShowcaseUrl`.
+ * `data-wake-urls` on the section feeds `src/scripts/wake.ts`.
+ */
+import { getCollection, getEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import ProjectCard from './ProjectCard.astro';
+import SectionHeading from './SectionHeading.astro';
+
+const site = (await getEntry('site', 'site'))!.data;
+const projects = (await getCollection('projects')).map((e) => e.data).sort((a, b) => a.order - b.order);
+
+const wakeUrls = projects.flatMap((p) => (p.wakeUrl ? [p.wakeUrl] : []));
+---
+
+<section id="projects" class="section" aria-labelledby="projects-title" data-wake-urls={JSON.stringify(wakeUrls)}>
+  <div class="container">
+    <SectionHeading id="projects-title" eyebrow="04 / Projects" title="Things I have built" />
+
+    <ul class="bento" role="list">
+      {
+        projects.map((project, i) => (
+          <li class:list={['bento__item', `bento__item--${project.size}`]} data-reveal style={`--reveal-i: ${i % 3}`}>
+            <ProjectCard project={project} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="projects__more">
+      <a class="btn btn--ghost" href={site.projectsShowcaseUrl} target="_blank" rel="noopener noreferrer">
+        Open the projects showcase
+        <Icon name="external" size={20} />
+        <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    </p>
+  </div>
+</section>
+
+<script>
+  import '../scripts/wake.ts';
+</script>
+
+<style>
+  /* Phone: one column. */
+  .bento {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--grid-gap);
+  }
+
+  /* md: two equal columns. An odd last card sits centered at one-column width. */
+  @media (min-width: 48em) and (max-width: 63.99em) {
+    .bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .bento__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - var(--grid-gap) / 2);
+    }
+  }
+
+  /* lg: 12 columns. Large = 6 (two in a row), small = 4 (three in a row). */
+  @media (min-width: 64em) {
+    .bento {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .bento__item--large {
+      grid-column: span 6;
+    }
+
+    .bento__item--small {
+      grid-column: span 4;
+    }
+  }
+
+  .projects__more {
+    display: flex;
+    justify-content: center;
+    max-width: none;
+    margin-block-start: var(--space-7);
+  }
+</style>
