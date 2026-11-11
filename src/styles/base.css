@@ -407,7 +407,7 @@ hr {
   font-family: var(--font-mono);
   font-size: var(--step--1);
   line-height: var(--leading-snug);
-  white-space: nowrap;
+  max-width: 100%;
 }
 
 /* --------------------------------------------------------------------------

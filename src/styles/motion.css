@@ -341,3 +341,12 @@ html.js [data-reveal].is-visible {
     transform: none;
   }
 }
+
+/* Print: reveals never hide content on paper, independent of JS timing. */
+@media print {
+  html.js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
