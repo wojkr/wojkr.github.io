@@ -1,0 +1,119 @@
+---
+/*
+ * Paper airplanes (decorative strip, restored from the old site). No props.
+ *
+ * Motion (same geometry as the old `airplane-animation`): each plane is at the
+ * top of an arm that turns about a pivot a little below the strip.
+ *   0-50 %   the arm turns clockwise one full turn: hidden pass below the
+ *            strip, then a visible arc over the top, left to right.
+ *   50-100 % the pivot moves two radii to the right and the plane is mirrored:
+ *            hidden pass below, then a visible arc back, right to left.
+ * The end point of each arc is the start point of the next, so the path is
+ * continuous. Only `transform` is animated.
+ *
+ * Color: the PNG is one-color line art (teal). It is used as a CSS mask and
+ * painted with `--color-accent`, so it follows the palette.
+ *
+ * Hooks:
+ *   - The animation runs only under `html[data-motion='on']` (gate: see
+ *     motion.css). Default: a static composition of three planes.
+ *   - Local custom properties on `.airplanes`: `--airplanes-height`,
+ *     `--airplanes-size`. Per plane (inline): `--x` (0..1 horizontal position),
+ *     `--s` (scale), `--o` (opacity), `--dur`, `--delay`, `--rest` (angle of the
+ *     static pose when motion is off).
+ *   - Off screen: `content-visibility: auto` stops rendering and the animations.
+ */
+import planeImage from '../assets/images/airplane.png';
+
+// Sizes, durations, and delays 2-5 are the values of the old site.
+const planes = [
+  { x: 0.62, s: 1, o: 0.9, dur: 10000, delay: -4200, rest: 24, still: true },
+  { x: 0.76, s: 0.9, o: 0.7, dur: 8300, delay: -1876, rest: 0, still: false },
+  { x: 0.36, s: 0.8, o: 0.55, dur: 5300, delay: -3873, rest: -38, still: false },
+  { x: 0.98, s: 1.1, o: 0.8, dur: 10900, delay: -3873, rest: -16, still: true },
+  { x: 0.02, s: 1.1, o: 0.8, dur: 11500, delay: -6873, rest: 40, still: true },
+];
+---
+
+<div class="airplanes" aria-hidden="true" style={`--airplanes-image: url('${planeImage.src}')`}>
+  {
+    planes.map((p) => (
+      <span
+        class:list={['airplanes__arm', { 'airplanes__arm--still': p.still }]}
+        style={`--x: ${p.x}; --s: ${p.s}; --o: ${p.o}; --dur: ${p.dur}ms; --delay: ${p.delay}ms; --rest: ${p.rest}deg`}
+      >
+        <span class="airplanes__plane" />
+      </span>
+    ))
+  }
+</div>
+
+<style>
+  .airplanes {
+    --airplanes-height: 8.75rem; /* 140px, as on the old site */
+    --airplanes-size: 4.6875rem; /* 75px plane box; arm = 2 x size */
+
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--airplanes-height);
+    overflow: hidden;
+    contain: layout paint;
+    content-visibility: auto;
+    contain-intrinsic-size: auto var(--airplanes-height);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* The arm: the plane is in its top half, the pivot is its bottom center. */
+  .airplanes__arm {
+    position: absolute;
+    inset-block-start: 0;
+    /* Static position. The path is 4 x size wide (arm + pivot shift). */
+    inset-inline-start: calc(var(--x) * (100% - var(--airplanes-size) * 4));
+    inline-size: var(--airplanes-size);
+    block-size: calc(var(--airplanes-size) * 2);
+    transform-origin: bottom;
+    scale: var(--s);
+    opacity: var(--o);
+    /* Static pose: the default. Motion on replaces it with the flight. */
+    transform: rotate(var(--rest));
+    display: none;
+  }
+
+  .airplanes__arm--still {
+    display: block;
+  }
+
+  .airplanes__plane {
+    display: block;
+    inline-size: var(--airplanes-size);
+    block-size: var(--airplanes-size);
+    background-color: var(--color-accent);
+    -webkit-mask: var(--airplanes-image) center / contain no-repeat;
+    mask: var(--airplanes-image) center / contain no-repeat;
+  }
+
+  /* Motion on: all five planes fly. */
+  :global(html[data-motion='on']) .airplanes__arm {
+    display: block;
+    animation: airplanes-flight var(--dur) linear var(--delay) infinite;
+  }
+
+  @keyframes airplanes-flight {
+    0% {
+      transform: translateX(0) rotate(-270deg) scaleX(1);
+    }
+
+    50% {
+      transform: translateX(0) rotate(90deg) scaleX(1);
+    }
+
+    50.01% {
+      transform: translateX(calc(var(--airplanes-size) * 3)) rotate(270deg) scaleX(-1);
+    }
+
+    100% {
+      transform: translateX(calc(var(--airplanes-size) * 3)) rotate(-90deg) scaleX(-1);
+    }
+  }
+</style>
