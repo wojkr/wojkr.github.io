@@ -1,0 +1,343 @@
+/* ==========================================================================
+   motion.css — effects. Only `transform` and `opacity` are animated.
+
+   HOW TO USE
+   - Scroll reveal: add `data-reveal` to an element. An inline script must add
+     class `js` to <html>; an IntersectionObserver adds `.is-visible`.
+     Variants: data-reveal="left" | "right" | "scale". Stagger: style="--reveal-i: 2".
+     Without JS the content is always visible.
+   - Spotlight: add `.spotlight` to a card. JS sets `--mx` / `--my` (px, relative
+     to the card) on pointermove. Without JS the glow shows at the card center.
+   - Mesh background: put <div class="mesh-bg" aria-hidden="true"> as a direct
+     child of the hero. The parent becomes its positioning context automatically.
+     Put <div class="grain"> inside `.mesh-bg` (or in any positioned box).
+   - `.hover-lift`: lift on hover. `.img-zoom`: wrapper; the inner <img> zooms.
+   - Marquee: <div class="marquee"><ul class="marquee__track">…</ul></div>.
+     The component writes the items twice; mark each duplicate item with
+     aria-hidden="true" (reduced motion hides the duplicates).
+     Set --marquee-gap or --marquee-duration on `.marquee` to tune it.
+   - Timeline: put <span class="timeline-line" aria-hidden="true"> inside a
+     `position: relative` timeline wrapper; set its `left` in the component.
+   - prefers-reduced-motion: reduce makes every effect static (end of file).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Scroll reveal
+   -------------------------------------------------------------------------- */
+
+/* Hidden start state. Applies only when JS runs (html.js). */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+}
+
+/* Variant: slide in from the left. */
+html.js [data-reveal='left'] {
+  transform: translateX(calc(var(--reveal-distance) * -1));
+}
+
+/* Variant: slide in from the right. */
+html.js [data-reveal='right'] {
+  transform: translateX(var(--reveal-distance));
+}
+
+/* Variant: scale up. */
+html.js [data-reveal='scale'] {
+  transform: scale(0.94);
+}
+
+/* Visible end state; --reveal-i (0, 1, 2 …) staggers siblings by 80ms each. */
+html.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+  transition-delay: calc(var(--reveal-i, 0) * var(--reveal-stagger));
+}
+
+/* --------------------------------------------------------------------------
+   2. Cursor spotlight
+   -------------------------------------------------------------------------- */
+
+/* .spotlight — card with a glow that follows the pointer (--mx, --my in px). */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid var(--color-border);
+}
+
+/* The glow layer: above the card background, behind the card content. */
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-behind);
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--spotlight-size, 22rem) circle at var(--mx, 50%) var(--my, 50%),
+    var(--color-accent-glow),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+  pointer-events: none;
+}
+
+/* Glow fades in on hover and on keyboard focus inside the card. */
+.spotlight:hover::before,
+.spotlight:focus-within::before {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   3. Mesh gradient background + grain
+   -------------------------------------------------------------------------- */
+
+/* The parent of .mesh-bg becomes the positioning and stacking context. */
+:has(> .mesh-bg) {
+  position: relative;
+  isolation: isolate;
+}
+
+/* .mesh-bg — decorative hero background; sits behind the content. */
+.mesh-bg {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-behind);
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(60% 70% at 50% 110%, var(--color-mesh-3), transparent 70%);
+}
+
+/* The two blobs: soft radial gradients; only transform is animated. */
+.mesh-bg::before,
+.mesh-bg::after {
+  content: '';
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  will-change: transform;
+  animation: mesh-drift-a var(--duration-mesh) var(--ease-in-out) infinite alternate;
+}
+
+/* Blob 1: pink, top left. */
+.mesh-bg::before {
+  top: -35vmax;
+  left: -20vmax;
+  background: radial-gradient(closest-side, var(--color-mesh-1), transparent);
+}
+
+/* Blob 2: blue, right side; different path and speed. */
+.mesh-bg::after {
+  top: -10vmax;
+  right: -30vmax;
+  background: radial-gradient(closest-side, var(--color-mesh-2), transparent);
+  animation-name: mesh-drift-b;
+  animation-duration: calc(var(--duration-mesh) * 1.4);
+}
+
+@keyframes mesh-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(14vmax, 8vmax, 0) scale(1.2);
+  }
+}
+
+@keyframes mesh-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  to {
+    transform: translate3d(-16vmax, 10vmax, 0) scale(0.9);
+  }
+}
+
+/* .grain — static film-grain overlay (inline SVG feTurbulence), low opacity. */
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   4. Hover lift and image zoom
+   -------------------------------------------------------------------------- */
+
+/* .hover-lift — the element rises on hover (pointer devices only). */
+.hover-lift {
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+/* .img-zoom — clipping wrapper; the inner image scales on hover. */
+.img-zoom {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.img-zoom img {
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .hover-lift:hover {
+    transform: translateY(var(--lift-distance));
+  }
+
+  .img-zoom:hover img,
+  a:hover .img-zoom img,
+  .card:hover .img-zoom img {
+    transform: scale(1.05);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. Marquee
+   -------------------------------------------------------------------------- */
+
+/* .marquee — clipping viewport with fading edges. */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, var(--color-mask) 8%, var(--color-mask) 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, var(--color-mask) 8%, var(--color-mask) 92%, transparent);
+}
+
+/* .marquee__track — row with the content written twice; loops by -50%.
+   The end padding equals the gap, so the loop point is seamless. */
+.marquee__track {
+  display: flex;
+  align-items: center;
+  gap: var(--marquee-gap, var(--space-5));
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  padding-inline-end: var(--marquee-gap, var(--space-5));
+  list-style: none;
+  animation: marquee-scroll var(--marquee-duration, var(--duration-marquee)) linear infinite;
+}
+
+/* Track items keep their size and have no list gap. */
+.marquee__track > * {
+  flex: none;
+  margin: 0;
+}
+
+/* Pause when the pointer is over the marquee or focus is inside it. */
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Timeline line
+   -------------------------------------------------------------------------- */
+
+/* .timeline-line — vertical line; fully drawn by default. */
+.timeline-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to bottom, var(--color-accent), var(--color-link));
+  transform-origin: top;
+  pointer-events: none;
+}
+
+/* With scroll-driven animations: the line draws while it scrolls into view.
+   The drawing tip stays at 65% of the viewport height. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline-line {
+      animation: timeline-draw linear both;
+      animation-timeline: view(block 0% 35%);
+      animation-range: entry-crossing 0% entry-crossing 100%;
+    }
+  }
+}
+
+@keyframes timeline-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. Reduced motion — every effect above becomes static
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Reveals: content is visible immediately, no transition. */
+  html.js [data-reveal],
+  html.js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* Spotlight: the glow changes without a fade. */
+  .spotlight::before {
+    transition: none;
+  }
+
+  /* Mesh: blobs stay in their start position. */
+  .mesh-bg::before,
+  .mesh-bg::after {
+    animation: none;
+    will-change: auto;
+  }
+
+  /* Lift and zoom: no movement. */
+  .hover-lift,
+  .img-zoom img {
+    transition: none;
+  }
+
+  .hover-lift:hover,
+  .img-zoom:hover img,
+  a:hover .img-zoom img,
+  .card:hover .img-zoom img {
+    transform: none;
+  }
+
+  /* Marquee: a static wrapped list, no mask, duplicates hidden. */
+  .marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .marquee__track {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: auto;
+    padding-inline-end: 0;
+    animation: none;
+    transform: none;
+  }
+
+  .marquee__track > [aria-hidden='true'] {
+    display: none;
+  }
+
+  /* Timeline: the full line shows. */
+  .timeline-line {
+    animation: none;
+    transform: none;
+  }
+}
