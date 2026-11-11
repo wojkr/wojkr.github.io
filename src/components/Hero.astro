@@ -1,0 +1,207 @@
+---
+/*
+ * Hero section. No props. Data: `site`.
+ * DOM order: copy (name, lead, CTAs, socials), then media (photo, terminal).
+ * Phones: the two wrappers are `display: contents` and `order` gives
+ * name -> photo -> text and CTAs -> terminal. The focus order does not change,
+ * because the photo and the terminal have no focusable elements.
+ * From md: two columns (7 / 5 of 12).
+ */
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import SocialLinks from './SocialLinks.astro';
+import Terminal from './Terminal.astro';
+
+const site = (await getEntry('site', 'site'))!.data;
+
+// "Wojciech Krupa" -> first line "Wojciech", second line "Krupa".
+const [firstName, ...otherNames] = site.name.split(' ');
+const lastName = otherNames.join(' ');
+
+const photo = site.profileImage;
+const photoWidths = [...new Set([280, 400, 560, photo.width].filter((w) => w <= photo.width))];
+---
+
+<section id="home" class="hero" aria-labelledby="home-title">
+  <div class="mesh-bg" aria-hidden="true"><div class="grain"></div></div>
+
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <div class="hero__intro">
+        <p class="eyebrow" data-reveal style="--reveal-i: 0">{site.headline}</p>
+        <h1 id="home-title" class="hero__name" data-reveal style="--reveal-i: 1">
+          <span class="hero__name-line">{firstName}</span>
+          {lastName && <span class="hero__name-line accent">{lastName}</span>}
+        </h1>
+      </div>
+
+      <div class="hero__body">
+        <p class="hero__lead" data-reveal style="--reveal-i: 2">{site.summary}</p>
+        <div class="hero__cta" data-reveal style="--reveal-i: 3">
+          <a class="btn btn--primary" href="#contact">Contact me</a>
+          <a class="btn btn--ghost" href="#projects">View projects <Icon name="arrow-down" size={20} /></a>
+        </div>
+        <div class="hero__social" data-reveal style="--reveal-i: 4">
+          <SocialLinks />
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__media">
+      <div class="hero__photo" data-reveal="scale" style="--reveal-i: 2">
+        <Image
+          src={photo}
+          alt={site.profileImageAlt}
+          widths={photoWidths}
+          sizes="(min-width: 64em) 28rem, (min-width: 48em) 38vw, 17.5rem"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+      <div class="hero__terminal">
+        <Terminal />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    --hero-photo-max: 17.5rem; /* 280px on phones */
+
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - var(--header-height));
+    min-height: calc(100svh - var(--header-height));
+    padding-block: var(--space-7) var(--space-8);
+    overflow-x: clip; /* the photo glow never makes a horizontal scrollbar */
+  }
+
+  /* Phones: one column; `order` puts the photo between the name and the text. */
+  .hero__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .hero__copy,
+  .hero__media {
+    display: contents;
+  }
+
+  .hero__intro {
+    order: 1;
+    container-type: inline-size; /* lets the name scale with the column width */
+  }
+
+  .hero__photo {
+    order: 2;
+  }
+
+  .hero__body {
+    order: 3;
+  }
+
+  .hero__terminal {
+    order: 4;
+  }
+
+  /* Name: two lines, display size. The widest word ("Wojciech") is below
+     5.6em wide, so 17cqi keeps it inside the column at every width. */
+  .hero__name {
+    margin-block-start: var(--space-4);
+    font-size: min(var(--step-6), 13vw);
+    font-size: min(var(--step-6), 17cqi);
+    font-weight: var(--weight-bold);
+    line-height: 1;
+  }
+
+  .hero__name-line {
+    display: block;
+  }
+
+  .hero__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .hero__lead {
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+  }
+
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  /* Photo: the pink circle is part of the image. Only a soft glow behind it. */
+  .hero__photo {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    max-width: var(--hero-photo-max);
+    margin-inline: auto;
+  }
+
+  .hero__photo::before {
+    content: '';
+    position: absolute;
+    inset: -6%;
+    z-index: var(--z-behind);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--color-mesh-1), transparent);
+    pointer-events: none;
+  }
+
+  .hero__photo img {
+    width: 100%;
+  }
+
+  /* From md: copy on the left (7 columns), photo and terminal on the right (5). */
+  @media (min-width: 48em) {
+    .hero {
+      --hero-photo-max: 28rem;
+    }
+
+    .hero__grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: center;
+      gap: var(--grid-gap);
+    }
+
+    .hero__copy {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      grid-column: span 7;
+    }
+
+    .hero__media {
+      display: block;
+      grid-column: span 5;
+    }
+
+    /* The terminal overlaps the bottom edge of the photo (static offset). */
+    .hero__terminal {
+      position: relative;
+      z-index: var(--z-raised);
+      margin-block-start: calc(var(--space-6) * -1);
+    }
+  }
+
+  @media (min-width: 64em) {
+    .hero__copy {
+      gap: var(--space-6);
+    }
+
+    .hero__body {
+      gap: var(--space-6);
+    }
+  }
+</style>
