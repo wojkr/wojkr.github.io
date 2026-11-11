@@ -30,6 +30,7 @@ const sizes = isLarge
     <Image
       src={project.image}
       alt={project.imageAlt}
+      class:list={{ 'is-centered': project.imagePosition === 'center' }}
       widths={widths}
       sizes={sizes}
       loading="lazy"
@@ -95,6 +96,11 @@ const sizes = isLarge
     height: 100%;
     object-fit: cover;
     object-position: center top;
+  }
+
+  /* Data field `imagePosition: "center"`: keep the middle of the screenshot. */
+  .project-card__media :global(img.is-centered) {
+    object-position: center;
   }
 
   .project-card__body {

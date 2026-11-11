@@ -47,7 +47,8 @@
     "link": "https://wojkr.github.io/projects/#3",
     "size": "small",
     "image": "../assets/images/project-block-breaker.webp",
-    "imageAlt": "Block Breaker game in play: rows of coloured blocks, a paddle and balls on a grey board, and a side panel with level, points, and active bonuses."
+    "imageAlt": "Block Breaker game in play: rows of coloured blocks, a paddle and balls on a grey board, and a side panel with level, points, and active bonuses.",
+    "imagePosition": "center"
   },
   {
     "id": "solar-system",
@@ -59,6 +60,7 @@
     "link": "https://wojkr.github.io/projects/#4",
     "size": "small",
     "image": "../assets/images/project-solar-system.webp",
-    "imageAlt": "Solar System animation: a glowing orange sun with planets in orbit, including Saturn with its rings and Jupiter, on a starry background."
+    "imageAlt": "Solar System animation: a glowing orange sun with planets in orbit, including Saturn with its rings and Jupiter, on a starry background.",
+    "imagePosition": "center"
   }
 ]

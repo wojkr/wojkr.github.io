@@ -144,6 +144,8 @@ const projects = defineCollection({
       size: z.enum(['large', 'small']),
       image: image(),
       imageAlt: text,
+      // Which part of the image stays visible when the card crops it. Default: 'top'.
+      imagePosition: z.enum(['top', 'center']).default('top'),
     }),
 });
 

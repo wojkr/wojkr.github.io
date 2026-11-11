@@ -43,6 +43,14 @@ All content is in data files. Do not put content in the layout files.
 1. Put the image file in `src/assets/images/`.
 2. Refer to the image from the project entry in `src/content/projects.json`. Use the same format as the other entries.
 3. Run `npm run build`. Astro makes the optimized image sizes.
+4. The card crops the image and keeps its top edge. To keep the middle of the image, add `"imagePosition": "center"` to the project entry.
+
+## Animations
+
+- All effects run only when `<html>` has `data-motion="on"`.
+- The default follows the system setting "reduce motion". The **Animations** button in the header overrides it. The browser stores the choice in `localStorage` (key `motion`).
+- With animations off, or without JavaScript, the site is static: no typing terminal, no scrolling technology row, no flying paper airplanes.
+- Effect styles: `src/styles/motion.css`. State logic: `src/scripts/motion.ts`.
 
 ## Deploy
 
