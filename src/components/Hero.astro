@@ -96,12 +96,13 @@ const photoWidths = [...new Set([280, 400, 560, photo.width].filter((w) => w <= 
     container-type: inline-size; /* lets the name scale with the column width */
   }
 
+  /* Phones: text and buttons come before the photo, so the buttons are on the first screen. */
   .hero__photo {
-    order: 2;
+    order: 3;
   }
 
   .hero__body {
-    order: 3;
+    order: 2;
   }
 
   .hero__terminal {

@@ -27,11 +27,14 @@ import planeImage from '../assets/images/airplane.png';
 
 // Sizes, durations, and delays 2-5 are the values of the old site.
 const planes = [
-  { x: 0.62, s: 1, o: 0.9, dur: 10000, delay: -4200, rest: 24, still: true },
-  { x: 0.76, s: 0.9, o: 0.7, dur: 8300, delay: -1876, rest: 0, still: false },
-  { x: 0.36, s: 0.8, o: 0.55, dur: 5300, delay: -3873, rest: -38, still: false },
-  { x: 0.98, s: 1.1, o: 0.8, dur: 10900, delay: -3873, rest: -16, still: true },
-  { x: 0.02, s: 1.1, o: 0.8, dur: 11500, delay: -6873, rest: 40, still: true },
+  { x: 0.62, sx: 0.5, s: 1, o: 0.9, dur: 10000, delay: -4200, rest: 0, still: true },
+  { x: 0.76, sx: 0, s: 0.9, o: 0.7, dur: 8300, delay: -1876, rest: 0, still: false },
+  { x: 0.36, sx: 0, s: 0.8, o: 0.55, dur: 5300, delay: -3873, rest: -38, still: false },
+  { x: 0.98, sx: 0.92, s: 1.1, o: 0.8, dur: 10900, delay: -3873, rest: -16, still: true },
+  { x: 0.02, sx: 0.08, s: 1.1, o: 0.8, dur: 11500, delay: -6873, rest: 16, still: true },
+  // Two extra planes (not in the old site) so the strip is rarely empty.
+  { x: 0.2, sx: 0, s: 0.85, o: 0.6, dur: 9100, delay: -700, rest: 0, still: false },
+  { x: 0.5, sx: 0, s: 0.95, o: 0.75, dur: 7200, delay: -5300, rest: 0, still: false },
 ];
 ---
 
@@ -40,7 +43,7 @@ const planes = [
     planes.map((p) => (
       <span
         class:list={['airplanes__arm', { 'airplanes__arm--still': p.still }]}
-        style={`--x: ${p.x}; --s: ${p.s}; --o: ${p.o}; --dur: ${p.dur}ms; --delay: ${p.delay}ms; --rest: ${p.rest}deg`}
+        style={`--x: ${p.x}; --sx: ${p.sx}; --s: ${p.s}; --o: ${p.o}; --dur: ${p.dur}ms; --delay: ${p.delay}ms; --rest: ${p.rest}deg`}
       >
         <span class="airplanes__plane" />
       </span>
@@ -80,8 +83,10 @@ const planes = [
     display: none;
   }
 
+  /* Static composition: three planes spread evenly over the strip. */
   .airplanes__arm--still {
     display: block;
+    inset-inline-start: calc(var(--sx) * (100% - var(--airplanes-size)));
   }
 
   .airplanes__plane {
@@ -96,6 +101,7 @@ const planes = [
   /* Motion on: all five planes fly. */
   :global(html[data-motion='on']) .airplanes__arm {
     display: block;
+    inset-inline-start: calc(var(--x) * (100% - var(--airplanes-size) * 4));
     animation: airplanes-flight var(--dur) linear var(--delay) infinite;
   }
 

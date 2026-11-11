@@ -62,6 +62,31 @@ const wakeUrls = projects.flatMap((p) => (p.wakeUrl ? [p.wakeUrl] : []));
     }
 
     .bento__item--small {
+      grid-column: span 6;
+    }
+  }
+
+  /* md only: small cards sit two in a row. A lone last card takes the full row
+     and shows its image beside the text. */
+  @media (min-width: 48em) and (max-width: 63.99em) {
+    .bento__item--small:last-child:nth-child(odd) {
+      grid-column: span 12;
+    }
+
+    .bento__item--small:last-child:nth-child(odd) :global(.project-card) {
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    .bento__item--small:last-child:nth-child(odd) :global(.project-card__media) {
+      flex: 0 0 40%;
+      align-self: flex-start;
+    }
+  }
+
+  /* lg: three small cards in a row. */
+  @media (min-width: 64em) {
+    .bento__item--small {
       grid-column: span 4;
     }
   }

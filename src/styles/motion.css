@@ -63,6 +63,26 @@ html.js[data-motion='on'] [data-reveal].is-visible {
   transition-delay: calc(var(--reveal-i, 0) * var(--reveal-stagger));
 }
 
+/* First viewport (hero): a CSS-only entrance. It does not wait for the reveal
+   script, so the name, the text, and the photo are never hidden by a slow or
+   failed script load. */
+html.js[data-motion='on'] #home [data-reveal] {
+  animation: reveal-in var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--reveal-i, 0) * var(--reveal-stagger));
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* --------------------------------------------------------------------------
    2. Cursor spotlight
    -------------------------------------------------------------------------- */
@@ -301,6 +321,11 @@ html[data-motion='on'] .marquee:focus-within .marquee__track {
 @supports (animation-timeline: view()) {
   html[data-motion='on'] .timeline-line {
     animation: timeline-draw linear both;
+  }
+
+  /* Separate rule on purpose: the CSS minifier merges `animation-timeline` into the
+     `animation` shorthand when both are in one rule, and browsers reject that value. */
+  html[data-motion='on'] :is(.timeline-line) {
     animation-timeline: view(block 0% 35%);
     animation-range: entry-crossing 0% entry-crossing 100%;
   }
