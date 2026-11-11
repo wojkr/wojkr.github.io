@@ -1,8 +1,8 @@
 ---
 /*
  * Terminal card with a typewriter (effect E2). No props. Data: `site.terminal`.
- * - No JS, or reduced motion: a static list of all messages.
- * - `html.js` and motion allowed: the list is visually hidden (it stays in the
+ * - No JS, or motion off: a static list of all messages.
+ * - `html.js[data-motion='on']`: the list is visually hidden (it stays in the
  *   accessibility tree) and `src/scripts/terminal.ts` types one line at a time.
  * The two states are selected in CSS, before the first paint, so the script
  * causes no layout shift.
@@ -122,6 +122,7 @@ const { prompt, messages } = site.terminal;
 
   .terminal__sigil {
     color: var(--color-text-muted);
+    margin-inline-end: 1ch;
   }
 
   .terminal__title {
@@ -138,27 +139,25 @@ const { prompt, messages } = site.terminal;
     background-color: var(--color-accent);
   }
 
-  /* Animated state: JS runs and the user allows motion. */
-  @media (prefers-reduced-motion: no-preference) {
-    :global(html.js) .terminal__static {
-      /* Visually hidden; assistive technology still reads the full list. */
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
+  /* Animated state: JS runs and motion is on (gate: see motion.css). */
+  :global(html.js[data-motion='on']) .terminal__static {
+    /* Visually hidden; assistive technology still reads the full list. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 
-    :global(html.js) .terminal__live {
-      display: block;
-    }
+  :global(html.js[data-motion='on']) .terminal__live {
+    display: block;
+  }
 
-    /* Blink: opacity only. */
-    .terminal__cursor {
-      animation: terminal-blink calc(var(--duration-slow) * 1.5) steps(1, end) infinite;
-    }
+  /* Blink: opacity only. */
+  :global(html.js[data-motion='on']) .terminal__cursor {
+    animation: terminal-blink calc(var(--duration-slow) * 1.5) steps(1, end) infinite;
   }
 
   @keyframes terminal-blink {

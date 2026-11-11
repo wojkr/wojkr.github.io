@@ -3,6 +3,9 @@
  * Header — sticky site header with the primary navigation.
  * Phones: a <details> disclosure (works without JS). md and up: an inline list.
  * Links use "/#id" so they also work from the 404 page.
+ * Motion toggle: <button data-motion-toggle>, visible at all widths, hidden
+ * without JS. CSS selects its icon and label from `html[data-motion]`, so the
+ * first paint is correct; `nav.ts` handles the click and `aria-pressed`.
  */
 import { getEntry } from 'astro:content';
 import Icon from './Icon.astro';
@@ -23,6 +26,13 @@ const contact = { href: '/#contact', label: 'Contact' };
     <a class="header__logo" href="/#home">
       WK<span class="visually-hidden"> — {site.name}, home</span>
     </a>
+
+    <!-- Pressed = animations on. The name does not change; the state is aria-pressed. -->
+    <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="true" aria-label="Animations">
+      <span class="motion-toggle__icon motion-toggle__on"><Icon name="pause" size={20} /></span>
+      <span class="motion-toggle__icon motion-toggle__off"><Icon name="play" size={20} /></span>
+      <span class="motion-toggle__label"><span>Animations</span></span>
+    </button>
 
     <nav class="nav" aria-label="Primary">
       <!-- md and up -->
@@ -109,6 +119,67 @@ const contact = { href: '/#contact', label: 'Contact' };
 
   .header__logo:hover {
     color: var(--color-accent);
+  }
+
+  /* --- Motion toggle: icon button on phones, icon + text from lg. --- */
+  .motion-toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-width: var(--touch-target);
+    height: var(--touch-target);
+    margin-inline-start: auto; /* pushes the toggle and the nav to the right */
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-snug);
+    white-space: nowrap;
+  }
+
+  .motion-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  /* No JS: the toggle cannot work. */
+  :global(html:not(.js)) .motion-toggle {
+    display: none;
+  }
+
+  /* Text: hidden on phones. The two texts share one grid cell, so the button
+     keeps one width in the two states (no layout shift). */
+  .motion-toggle__label {
+    display: none;
+  }
+
+  .motion-toggle__label > span {
+    grid-area: 1 / 1;
+  }
+
+  /* State from <html data-motion>: motion off (default) shows "play" and
+     "Motion off"; motion on shows "pause" and "Motion on". */
+  .motion-toggle__icon.motion-toggle__on,
+  :global(html[data-motion='on']) .motion-toggle__icon.motion-toggle__off {
+    display: none;
+  }
+
+  :global(html[data-motion='on']) .motion-toggle__icon.motion-toggle__on {
+    display: block;
+  }
+
+  .motion-toggle__label > .motion-toggle__on,
+  :global(html[data-motion='on']) .motion-toggle__label > .motion-toggle__off {
+    visibility: hidden;
+  }
+
+  :global(html[data-motion='on']) .motion-toggle__label > .motion-toggle__on {
+    visibility: visible;
   }
 
   /* --- Links (both lists) --- */
@@ -219,6 +290,17 @@ const contact = { href: '/#contact', label: 'Contact' };
 
     .nav__menu {
       display: none;
+    }
+  }
+
+  /* lg and up: the toggle shows its text. */
+  @media (min-width: 64em) {
+    .motion-toggle {
+      padding-inline: var(--space-3);
+    }
+
+    .motion-toggle__label {
+      display: grid;
     }
   }
 </style>

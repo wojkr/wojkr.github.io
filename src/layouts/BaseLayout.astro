@@ -34,9 +34,21 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Marks that JS runs. The hidden start state of scroll reveals needs it. -->
+    <!-- Marks that JS runs. The hidden start state of scroll reveals needs it.
+         Sets the motion state before the first paint (see scripts/motion.ts):
+         the stored choice wins; if there is none, the system setting decides. -->
     <script is:inline>
       document.documentElement.classList.add('js');
+      (function () {
+        var motion = null;
+        try {
+          motion = localStorage.getItem('motion');
+        } catch (e) {}
+        if (motion !== 'on' && motion !== 'off') {
+          motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : 'on';
+        }
+        document.documentElement.setAttribute('data-motion', motion);
+      })();
       // Failsafe: if the effect scripts do not load, show all content again.
       setTimeout(function () {
         if (!document.documentElement.hasAttribute('data-fx')) {

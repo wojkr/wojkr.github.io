@@ -6,11 +6,14 @@
  *     [data-terminal-title]  — receives the typed title
  *     [data-terminal-line]   — receives the typed line
  *
- * The CSS of the component shows the animated line only under `html.js` and
- * `prefers-reduced-motion: no-preference`. This script only drives the text.
+ * The CSS of the component shows the animated line only under
+ * `html.js[data-motion='on']`. This script only drives the text.
  * The loop stops when the terminal is off screen, when the tab is hidden,
- * and when the user asks for reduced motion.
+ * and when motion is off (the CSS then shows the static list). It starts
+ * again when motion goes on.
  */
+
+import { motionOn, onMotionChange } from './motion.ts';
 
 interface TerminalMessage {
   title: string;
@@ -54,7 +57,7 @@ function readEntries(raw: string | undefined): TerminalEntry[] {
   }
 }
 
-function initTerminal(root: HTMLElement, reduceMotion: MediaQueryList): void {
+function initTerminal(root: HTMLElement): void {
   const titleEl = root.querySelector<HTMLElement>('[data-terminal-title]');
   const lineEl = root.querySelector<HTMLElement>('[data-terminal-line]');
   const entries = readEntries(root.dataset.messages);
@@ -110,7 +113,7 @@ function initTerminal(root: HTMLElement, reduceMotion: MediaQueryList): void {
 
   /** Starts or stops the one timer chain. */
   const sync = (): void => {
-    const shouldRun = onScreen && !document.hidden && !reduceMotion.matches;
+    const shouldRun = onScreen && !document.hidden && motionOn();
     if (shouldRun && timer === undefined) {
       timer = window.setTimeout(step, GAP_MS);
     } else if (!shouldRun && timer !== undefined) {
@@ -128,14 +131,11 @@ function initTerminal(root: HTMLElement, reduceMotion: MediaQueryList): void {
   }
 
   document.addEventListener('visibilitychange', sync);
-  reduceMotion.addEventListener('change', sync);
+  onMotionChange(sync);
   sync();
 }
 
 // The component CSS shows the animated line only under `html.js`.
 if (document.documentElement.classList.contains('js')) {
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  document
-    .querySelectorAll<HTMLElement>('[data-terminal]')
-    .forEach((root) => initTerminal(root, reduceMotion));
+  document.querySelectorAll<HTMLElement>('[data-terminal]').forEach((root) => initTerminal(root));
 }

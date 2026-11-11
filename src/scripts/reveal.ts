@@ -1,6 +1,10 @@
 // E1 scroll reveal. Adds `.is-visible` to `[data-reveal]` elements (see motion.css).
-// The hidden state exists only under `html.js`. On any error this script removes
-// `js` from <html>, so the content stays visible.
+// The hidden state exists only under `html.js[data-motion='on']`. On any error
+// this script removes `js` from <html>, so the content stays visible.
+// Motion off (at load, or later): all elements get `.is-visible` at once and stay
+// visible, so a later switch to "on" cannot hide content again.
+
+import { motionOn, onMotionChange } from './motion.ts';
 
 const root = document.documentElement;
 
@@ -11,10 +15,7 @@ try {
   const show = (el: Element): void => el.classList.add('is-visible');
   const showAll = (): void => items.forEach(show);
 
-  if (
-    !('IntersectionObserver' in window) ||
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
+  if (!('IntersectionObserver' in window) || !motionOn()) {
     showAll();
   } else {
     const observer = new IntersectionObserver(
@@ -53,10 +54,17 @@ try {
       }
     });
 
-    // Print shows all content.
-    window.addEventListener('beforeprint', () => {
+    const finish = (): void => {
       showAll();
       observer.disconnect();
+    };
+
+    // Print shows all content.
+    window.addEventListener('beforeprint', finish);
+
+    // Motion goes off: reveal everything at once.
+    onMotionChange((on) => {
+      if (!on) finish();
     });
   }
 } catch {

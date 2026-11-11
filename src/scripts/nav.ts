@@ -2,7 +2,11 @@
  * nav.ts — enhances the header navigation. The menu works without this script.
  * 1. Mobile menu (<details data-nav-menu>): closes on link click and on Escape.
  * 2. Sets aria-current="true" on the nav links of the section in view.
+ * 3. Motion toggle (<button data-motion-toggle>): switches the motion state
+ *    (see motion.ts) and keeps `aria-pressed` in sync. CSS draws icon and label.
  */
+
+import { motionOn, onMotionChange, setMotion } from './motion.ts';
 
 const menu = document.querySelector<HTMLDetailsElement>('[data-nav-menu]');
 const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
@@ -22,6 +26,15 @@ if (menu) {
       menu.querySelector('summary')?.focus();
     }
   });
+}
+
+const motionToggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+
+if (motionToggle) {
+  const syncToggle = (on: boolean): void => motionToggle.setAttribute('aria-pressed', String(on));
+  syncToggle(motionOn());
+  onMotionChange(syncToggle);
+  motionToggle.addEventListener('click', () => setMotion(!motionOn()));
 }
 
 // Links that point to a section of the current page, grouped by section id.

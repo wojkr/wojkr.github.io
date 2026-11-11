@@ -2,6 +2,14 @@
    motion.css — effects. Only `transform` and `opacity` are animated.
 
    HOW TO USE
+   GATE
+   - Every animation, transition effect, and hidden start state runs only under
+     `html[data-motion='on']`. The static state is the default (ungated) style.
+     An inline script in <head> sets `data-motion` ("on" | "off") before the
+     first paint; `src/scripts/motion.ts` changes it. No attribute (no JS) or
+     "off" = static site. Do not use a reduced-motion media query in CSS.
+   - Component styles: write `:global(html[data-motion='on']) .your-class`.
+
    - Scroll reveal: add `data-reveal` to an element. An inline script must add
      class `js` to <html>; an IntersectionObserver adds `.is-visible`.
      Variants: data-reveal="left" | "right" | "scale". Stagger: style="--reveal-i: 2".
@@ -14,40 +22,39 @@
    - `.hover-lift`: lift on hover. `.img-zoom`: wrapper; the inner <img> zooms.
    - Marquee: <div class="marquee"><ul class="marquee__track">…</ul></div>.
      The component writes the items twice; mark each duplicate item with
-     aria-hidden="true" (reduced motion hides the duplicates).
+     aria-hidden="true" (the static state hides the duplicates).
      Set --marquee-gap or --marquee-duration on `.marquee` to tune it.
    - Timeline: put <span class="timeline-line" aria-hidden="true"> inside a
      `position: relative` timeline wrapper; set its `left` in the component.
-   - prefers-reduced-motion: reduce makes every effect static (end of file).
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
    1. Scroll reveal
    -------------------------------------------------------------------------- */
 
-/* Hidden start state. Applies only when JS runs (html.js). */
-html.js [data-reveal] {
+/* Hidden start state. Applies only when JS runs (html.js) and motion is on. */
+html.js[data-motion='on'] [data-reveal] {
   opacity: 0;
   transform: translateY(var(--reveal-distance));
 }
 
 /* Variant: slide in from the left. */
-html.js [data-reveal='left'] {
+html.js[data-motion='on'] [data-reveal='left'] {
   transform: translateX(calc(var(--reveal-distance) * -1));
 }
 
 /* Variant: slide in from the right. */
-html.js [data-reveal='right'] {
+html.js[data-motion='on'] [data-reveal='right'] {
   transform: translateX(var(--reveal-distance));
 }
 
 /* Variant: scale up. */
-html.js [data-reveal='scale'] {
+html.js[data-motion='on'] [data-reveal='scale'] {
   transform: scale(0.94);
 }
 
 /* Visible end state; --reveal-i (0, 1, 2 …) staggers siblings by 80ms each. */
-html.js [data-reveal].is-visible {
+html.js[data-motion='on'] [data-reveal].is-visible {
   opacity: 1;
   transform: none;
   transition:
@@ -80,8 +87,12 @@ html.js [data-reveal].is-visible {
     transparent 70%
   );
   opacity: 0;
-  transition: opacity var(--duration-base) var(--ease-out);
   pointer-events: none;
+}
+
+/* Motion on: the glow fades. Motion off: it changes without a fade. */
+html[data-motion='on'] .spotlight::before {
+  transition: opacity var(--duration-base) var(--ease-out);
 }
 
 /* Glow fades in on hover and on keyboard focus inside the card. */
@@ -110,7 +121,7 @@ html.js [data-reveal].is-visible {
   background: radial-gradient(60% 70% at 50% 110%, var(--color-mesh-3), transparent 70%);
 }
 
-/* The two blobs: soft radial gradients; only transform is animated. */
+/* The two blobs: soft radial gradients. Static by default. */
 .mesh-bg::before,
 .mesh-bg::after {
   content: '';
@@ -118,8 +129,6 @@ html.js [data-reveal].is-visible {
   width: 70vmax;
   height: 70vmax;
   border-radius: 50%;
-  will-change: transform;
-  animation: mesh-drift-a var(--duration-mesh) var(--ease-in-out) infinite alternate;
 }
 
 /* Blob 1: pink, top left. */
@@ -134,6 +143,17 @@ html.js [data-reveal].is-visible {
   top: -10vmax;
   right: -30vmax;
   background: radial-gradient(closest-side, var(--color-mesh-2), transparent);
+}
+
+/* Motion on: the blobs drift; only transform is animated. */
+html[data-motion='on'] .mesh-bg::before,
+html[data-motion='on'] .mesh-bg::after {
+  will-change: transform;
+  animation: mesh-drift-a var(--duration-mesh) var(--ease-in-out) infinite alternate;
+}
+
+/* Blob 2: different path and speed. */
+html[data-motion='on'] .mesh-bg::after {
   animation-name: mesh-drift-b;
   animation-duration: calc(var(--duration-mesh) * 1.4);
 }
@@ -170,29 +190,29 @@ html.js [data-reveal].is-visible {
    4. Hover lift and image zoom
    -------------------------------------------------------------------------- */
 
-/* .hover-lift — the element rises on hover (pointer devices only). */
-.hover-lift {
-  transition: transform var(--duration-base) var(--ease-out);
-}
-
-/* .img-zoom — clipping wrapper; the inner image scales on hover. */
+/* .img-zoom — clipping wrapper; the inner image scales on hover (motion on). */
 .img-zoom {
   overflow: hidden;
   border-radius: inherit;
 }
 
-.img-zoom img {
+/* .hover-lift — the element rises on hover (motion on, pointer devices only). */
+html[data-motion='on'] .hover-lift {
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+html[data-motion='on'] .img-zoom img {
   transition: transform var(--duration-slow) var(--ease-out);
 }
 
 @media (hover: hover) {
-  .hover-lift:hover {
+  html[data-motion='on'] .hover-lift:hover {
     transform: translateY(var(--lift-distance));
   }
 
-  .img-zoom:hover img,
-  a:hover .img-zoom img,
-  .card:hover .img-zoom img {
+  html[data-motion='on'] .img-zoom:hover img,
+  html[data-motion='on'] a:hover .img-zoom img,
+  html[data-motion='on'] .card:hover .img-zoom img {
     transform: scale(1.05);
   }
 }
@@ -201,25 +221,21 @@ html.js [data-reveal].is-visible {
    5. Marquee
    -------------------------------------------------------------------------- */
 
-/* .marquee — clipping viewport with fading edges. */
+/* .marquee — viewport of the list. Static by default: a centered, wrapped list. */
 .marquee {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, var(--color-mask) 8%, var(--color-mask) 92%, transparent);
-  mask-image: linear-gradient(to right, transparent, var(--color-mask) 8%, var(--color-mask) 92%, transparent);
 }
 
-/* .marquee__track — row with the content written twice; loops by -50%.
-   The end padding equals the gap, so the loop point is seamless. */
+/* .marquee__track — the list. The content is written two or more times. */
 .marquee__track {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--marquee-gap, var(--space-5));
-  width: max-content;
   margin: 0;
   padding: 0;
-  padding-inline-end: var(--marquee-gap, var(--space-5));
   list-style: none;
-  animation: marquee-scroll var(--marquee-duration, var(--duration-marquee)) linear infinite;
 }
 
 /* Track items keep their size and have no list gap. */
@@ -228,9 +244,32 @@ html.js [data-reveal].is-visible {
   margin: 0;
 }
 
+/* Static state: each item shows once. This is the same gate, negated: one rule
+   with `display: none` cannot break the `display` value that a component sets
+   on its items. Specificity (0,3,1) outranks a scoped item rule (0,2,0). */
+html:not([data-motion='on']) .marquee__track > [aria-hidden='true'] {
+  display: none;
+}
+
+/* Motion on: fading edges. */
+html[data-motion='on'] .marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, var(--color-mask) 8%, var(--color-mask) 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, var(--color-mask) 8%, var(--color-mask) 92%, transparent);
+}
+
+/* Motion on: one row that loops by -50%. The end padding equals the gap, so
+   the loop point is seamless. */
+html[data-motion='on'] .marquee__track {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  width: max-content;
+  padding-inline-end: var(--marquee-gap, var(--space-5));
+  animation: marquee-scroll var(--marquee-duration, var(--duration-marquee)) linear infinite;
+}
+
 /* Pause when the pointer is over the marquee or focus is inside it. */
-.marquee:hover .marquee__track,
-.marquee:focus-within .marquee__track {
+html[data-motion='on'] .marquee:hover .marquee__track,
+html[data-motion='on'] .marquee:focus-within .marquee__track {
   animation-play-state: paused;
 }
 
@@ -257,15 +296,13 @@ html.js [data-reveal].is-visible {
   pointer-events: none;
 }
 
-/* With scroll-driven animations: the line draws while it scrolls into view.
+/* Motion on, with scroll-driven animations: the line draws while it scrolls into view.
    The drawing tip stays at 65% of the viewport height. */
 @supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .timeline-line {
-      animation: timeline-draw linear both;
-      animation-timeline: view(block 0% 35%);
-      animation-range: entry-crossing 0% entry-crossing 100%;
-    }
+  html[data-motion='on'] .timeline-line {
+    animation: timeline-draw linear both;
+    animation-timeline: view(block 0% 35%);
+    animation-range: entry-crossing 0% entry-crossing 100%;
   }
 }
 
@@ -279,72 +316,12 @@ html.js [data-reveal].is-visible {
 }
 
 /* --------------------------------------------------------------------------
-   7. Reduced motion — every effect above becomes static
+   7. Print
    -------------------------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  /* Reveals: content is visible immediately, no transition. */
-  html.js [data-reveal],
-  html.js [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  /* Spotlight: the glow changes without a fade. */
-  .spotlight::before {
-    transition: none;
-  }
-
-  /* Mesh: blobs stay in their start position. */
-  .mesh-bg::before,
-  .mesh-bg::after {
-    animation: none;
-    will-change: auto;
-  }
-
-  /* Lift and zoom: no movement. */
-  .hover-lift,
-  .img-zoom img {
-    transition: none;
-  }
-
-  .hover-lift:hover,
-  .img-zoom:hover img,
-  a:hover .img-zoom img,
-  .card:hover .img-zoom img {
-    transform: none;
-  }
-
-  /* Marquee: a static wrapped list, no mask, duplicates hidden. */
-  .marquee {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
-  .marquee__track {
-    flex-wrap: wrap;
-    justify-content: center;
-    width: auto;
-    padding-inline-end: 0;
-    animation: none;
-    transform: none;
-  }
-
-  .marquee__track > [aria-hidden='true'] {
-    display: none;
-  }
-
-  /* Timeline: the full line shows. */
-  .timeline-line {
-    animation: none;
-    transform: none;
-  }
-}
 
 /* Print: reveals never hide content on paper, independent of JS timing. */
 @media print {
-  html.js [data-reveal] {
+  html.js[data-motion='on'] [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;

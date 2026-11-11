@@ -151,14 +151,12 @@ const sizes = isLarge
     text-decoration-thickness: 2px;
   }
 
-  /* Keyboard focus inside the card: same lift and zoom as hover. */
-  @media (prefers-reduced-motion: no-preference) {
-    .project-card:focus-within {
-      transform: translateY(var(--lift-distance));
-    }
+  /* Keyboard focus inside the card: same lift and zoom as hover (motion on). */
+  :global(html[data-motion='on']) .project-card:focus-within {
+    transform: translateY(var(--lift-distance));
+  }
 
-    .project-card:focus-within .project-card__media :global(img) {
-      transform: scale(var(--card-zoom));
-    }
+  :global(html[data-motion='on']) .project-card:focus-within .project-card__media :global(img) {
+    transform: scale(var(--card-zoom));
   }
 </style>
