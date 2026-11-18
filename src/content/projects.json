@@ -32,7 +32,10 @@
     "stack": ["Node.js", "Express", "MongoDB", "Passport"],
     "description": "Full-stack site with an interactive map, authentication, user accounts, and dessert listings with ratings and reviews.",
     "link": "https://wojkr.github.io/projects/#2",
-    "wakeUrl": "https://sweet-app-try.onrender.com/desserts",
+    "wakeUrl": [
+      "https://sweet-app-try.onrender.com/desserts",
+      "https://sweetapp-dependencies-upgrade.onrender.com/"
+    ],
     "size": "small",
     "image": "../assets/images/project-sweetapp.webp",
     "imageAlt": "SweetApp browse page: a map of the United States with dessert location markers above a grid of dessert cards with photos."
