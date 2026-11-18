@@ -13,6 +13,11 @@ const year = new Date().getFullYear();
     <SocialLinks />
     <p class="footer__copy">&copy; {year} {site.name}</p>
   </div>
+  <p class="container footer__origin">
+    This website is based on the{' '}
+    <a href={site.originalPortfolioUrl} target="_blank" rel="noopener">pre-AI era portfolio page<span class="visually-hidden"> (opens in a new tab)</span></a>{' '}
+    that I made a long time ago.
+  </p>
 </footer>
 
 <style>
@@ -49,6 +54,18 @@ const year = new Date().getFullYear();
   .footer__copy {
     color: var(--color-text-muted);
     font-size: var(--step--1);
+  }
+
+  /* One small line under the footer row. */
+  .footer__origin {
+    margin-block-start: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    text-align: center;
+  }
+
+  .footer__origin a {
+    color: var(--color-link);
   }
 
   /* md and up: one row. */

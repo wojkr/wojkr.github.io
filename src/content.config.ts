@@ -67,6 +67,8 @@ const site = defineCollection({
         projects: httpsUrl,
       }),
       projectsShowcaseUrl: httpsUrl,
+      /** The old portfolio page this site is based on (footer note). */
+      originalPortfolioUrl: httpsUrl,
       contact: z.strictObject({
         basinUrl: httpsUrl,
       }),
