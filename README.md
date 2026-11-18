@@ -86,4 +86,4 @@ Do not put secrets or API keys in this repository.
 When the page loads, it sends:
 
 - One visit notification to the same Basin form.
-- Wake-up requests to the demo servers. These servers are on free hosting and go to sleep when they are not in use.
+- Wake-up requests to the demo servers. These servers are on free hosting and go to sleep when they are not in use. The list comes from `wakeUrl` in `src/content/projects.json`: one URL, or a list of URLs for a project with more than one server.

@@ -139,8 +139,9 @@ const projects = defineCollection({
       stack: z.array(text).min(1),
       description: text,
       link: httpsUrl,
-      /** Optional URL to request on page load, to wake a sleeping demo server. */
-      wakeUrl: httpsUrl.optional(),
+      /** Optional URL(s) to request on page load, to wake sleeping demo servers.
+          One URL, or a list when the project has more than one server. */
+      wakeUrl: z.union([httpsUrl, z.array(httpsUrl).min(1)]).optional(),
       size: z.enum(['large', 'small']),
       image: image(),
       imageAlt: text,

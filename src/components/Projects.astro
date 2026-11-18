@@ -12,7 +12,7 @@ import SectionHeading from './SectionHeading.astro';
 const site = (await getEntry('site', 'site'))!.data;
 const projects = (await getCollection('projects')).map((e) => e.data).sort((a, b) => a.order - b.order);
 
-const wakeUrls = projects.flatMap((p) => (p.wakeUrl ? [p.wakeUrl] : []));
+const wakeUrls = projects.flatMap((p) => (p.wakeUrl ? [p.wakeUrl].flat() : []));
 ---
 
 <section id="projects" class="section" aria-labelledby="projects-title" data-wake-urls={JSON.stringify(wakeUrls)}>
