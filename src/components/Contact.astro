@@ -15,15 +15,14 @@ const basinUrl = site.contact.basinUrl;
 
 <section id="contact" class="section" aria-labelledby="contact-title" data-basin-url={basinUrl}>
   <div class="container">
-    <SectionHeading
-      id="contact-title"
-      eyebrow="05 / Contact"
-      title="Let's talk"
-      lead="Send a message. I usually reply within a few days."
-    />
-
     <div class="contact">
       <div class="contact__aside" data-reveal>
+        <SectionHeading
+          id="contact-title"
+          eyebrow="05 / Contact"
+          title="Let's talk"
+          lead="Send a message. I usually reply within a few days."
+        />
         <p class="contact__invite">
           Do you have a role, a project, or a question? Use the form and your message goes directly
           to my inbox.
@@ -142,6 +141,11 @@ const basinUrl = site.contact.basinUrl;
     flex-direction: column;
     gap: var(--space-4);
     min-width: 0;
+  }
+
+  /* The heading is part of the left column: the column gap gives the space below it. */
+  .contact__aside :global(.section-heading) {
+    margin-block-end: var(--space-2);
   }
 
   .contact__invite {
