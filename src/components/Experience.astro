@@ -50,7 +50,7 @@ function formatYearMonth(value: string): string {
                       <time datetime={job.end}>{formatYearMonth(job.end)}</time>
                     )}
                   </p>
-                  {current && <span class="entry__badge">Current</span>}
+                  {current && <span class="entry__badge shape-slant">Current</span>}
                 </div>
                 <div class="entry__body">
                   <h3 class="entry__role">{job.role}</h3>
@@ -170,8 +170,8 @@ function formatYearMonth(value: string): string {
     width: var(--tl-dot);
     height: var(--tl-dot);
     border: 2px solid var(--color-border-strong);
-    border-radius: 50%;
     background-color: var(--color-bg);
+    transform: rotate(45deg) scale(0.85); /* a diamond marker, not a circle */
   }
 
   /* Current job: filled accent dot with a soft ring. */
@@ -202,10 +202,11 @@ function formatYearMonth(value: string): string {
   }
 
   .entry__badge {
-    padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--color-accent);
-    border-radius: var(--radius-pill);
-    background-color: var(--color-accent-soft);
+    --shape-bg: var(--color-accent-soft); /* slanted label (shapes.css) */
+    --shape-line: var(--color-accent);
+    --shape-lean: var(--slant-tag);
+
+    padding: var(--space-1) calc(var(--space-3) + var(--slant-pad) / 2);
     color: var(--color-accent);
     font-family: var(--font-mono);
     font-size: var(--step--1);

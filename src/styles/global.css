@@ -1,4 +1,5 @@
 /* global.css — single entry point. Import this file once in the base layout. */
 @import './tokens.css';
 @import './base.css';
+@import './shapes.css';
 @import './motion.css';

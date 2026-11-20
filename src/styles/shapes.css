@@ -1,0 +1,124 @@
+/* ==========================================================================
+   shapes.css — the shape language "Slant". No rounded corners, no pills.
+
+   HOW TO USE
+   1. Slanted control (parallelogram): `.btn`, `.tag`, or `.shape-slant`.
+      The fill and the border are drawn on `::before`, which leans by
+      `--shape-lean` (default `--slant`). The element and its text stay upright,
+      so the hit area and the text do not move.
+      Set the colors with custom properties, not with background or border:
+        --shape-bg    fill color   (default transparent)
+        --shape-line  border color (default transparent)
+        --shape-lean  lean angle   (default var(--slant))
+      Keyboard focus draws the ring around the slanted shape.
+   2. Panel with cut corners: `.card` or `.shape-cut`.
+      Square edges; the top-right and bottom-left corners are cut by `--cut`.
+      The element keeps its own `border` and `background-color`; this file
+      draws the border line along the two cut edges.
+      Set `--panel-line` to the border color (default --color-border) and
+      `--panel-cut` to the cut size (default --cut).
+      Note: `clip-path` also clips outlines and shadows that are outside the
+      element. Draw focus rings of elements inside a panel with a negative
+      outline-offset.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Slanted controls
+   -------------------------------------------------------------------------- */
+
+.btn,
+.tag,
+.shape-slant {
+  position: relative;
+  isolation: isolate;
+  background: none; /* the fill is on ::before; this also removes the default button fill */
+  border: 0;
+}
+
+.btn::before,
+.tag::before,
+.shape-slant::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--shape-bg, transparent);
+  border: 1px solid var(--shape-line, transparent);
+  transform: skewX(var(--shape-lean, var(--slant)));
+  pointer-events: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+/* Keyboard focus: the ring follows the slanted shape. */
+.btn:focus-visible,
+.shape-slant:focus-visible {
+  outline: none;
+}
+
+.btn:focus-visible::before,
+.shape-slant:focus-visible::before {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+}
+
+/* --------------------------------------------------------------------------
+   2. Panels with cut corners
+   -------------------------------------------------------------------------- */
+
+.card,
+.shape-cut,
+.field__input {
+  --panel-cut: var(--cut);
+  --panel-line: var(--color-border);
+  /* Distance from the corner to the cut edge, measured along the diagonal. */
+  --panel-diag: calc(var(--panel-cut) * 0.7071);
+
+  border-radius: 0;
+  box-shadow: none; /* a shadow would be clipped at the cut corners */
+  background-image:
+    linear-gradient(
+      225deg,
+      transparent var(--panel-diag),
+      var(--panel-line) var(--panel-diag),
+      var(--panel-line) calc(var(--panel-diag) + 1px),
+      transparent calc(var(--panel-diag) + 1px)
+    ),
+    linear-gradient(
+      45deg,
+      transparent var(--panel-diag),
+      var(--panel-line) var(--panel-diag),
+      var(--panel-line) calc(var(--panel-diag) + 1px),
+      transparent calc(var(--panel-diag) + 1px)
+    );
+  background-origin: border-box;
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--panel-cut)) 0,
+    100% var(--panel-cut),
+    100% 100%,
+    var(--panel-cut) 100%,
+    0 calc(100% - var(--panel-cut))
+  );
+}
+
+/* Inputs: smaller cuts. The cut line follows the border color of each state.
+   The focus ring sits inside the field, so the cut corners do not hide it. */
+.field__input {
+  --panel-cut: var(--cut-sm);
+  --panel-line: var(--color-border-strong);
+}
+
+.field__input:hover {
+  --panel-line: var(--color-text-muted);
+}
+
+.field__input:focus-visible {
+  --panel-line: var(--color-focus);
+  outline-offset: calc(-1 * var(--focus-width) - 1px);
+}
+
+.field__input[aria-invalid='true'] {
+  --panel-line: var(--color-error);
+}

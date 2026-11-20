@@ -82,8 +82,16 @@ const sizes = isLarge
   /* Image frame: fixed aspect ratio, so there is no layout shift. */
   .project-card__media {
     aspect-ratio: 4 / 3;
-    border-radius: var(--radius-md);
     background-color: var(--color-surface-2);
+    /* Small cut corners, like the card (shapes.css). */
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--cut-sm)) 0,
+      100% var(--cut-sm),
+      100% 100%,
+      var(--cut-sm) 100%,
+      0 calc(100% - var(--cut-sm))
+    );
   }
 
   .project-card--large .project-card__media {
@@ -139,7 +147,6 @@ const sizes = isLarge
     position: absolute;
     inset: 0;
     z-index: var(--z-raised);
-    border-radius: var(--radius-lg);
   }
 
   /* Keyboard focus: the ring goes around the whole card. */
@@ -147,9 +154,10 @@ const sizes = isLarge
     outline: none;
   }
 
+  /* The card clips everything outside its edges (cut corners), so the ring sits inside. */
   .project-card__link:focus-visible::after {
     outline: var(--focus-width) solid var(--color-focus);
-    outline-offset: var(--focus-offset);
+    outline-offset: calc(-1 * var(--focus-width) - 2px);
   }
 
   /* Hover on any part of the card gives the link its hover style. */
