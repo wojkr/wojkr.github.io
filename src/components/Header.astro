@@ -28,7 +28,7 @@ const contact = { href: '/#contact', label: 'Contact' };
     </a>
 
     <!-- Pressed = animations on. The name does not change; the state is aria-pressed. -->
-    <button type="button" class="motion-toggle" data-motion-toggle aria-pressed="true" aria-label="Animations" title="Animations">
+    <button type="button" class="motion-toggle shape-slant" data-motion-toggle aria-pressed="true" aria-label="Animations" title="Animations">
       <span class="motion-toggle__icon motion-toggle__on"><Icon name="pause" size={20} /></span>
       <span class="motion-toggle__icon motion-toggle__off"><Icon name="play" size={20} /></span>
       <span class="motion-toggle__label"><span>Animations</span></span>
@@ -53,7 +53,7 @@ const contact = { href: '/#contact', label: 'Contact' };
 
       <!-- Phones: disclosure, no JS needed -->
       <details class="nav__menu" data-nav-menu>
-        <summary class="nav__toggle">
+        <summary class="nav__toggle shape-slant">
           <span class="visually-hidden">Menu</span>
           <span class="nav__icon nav__icon--open"><Icon name="menu" size={24} /></span>
           <span class="nav__icon nav__icon--close"><Icon name="close" size={24} /></span>
@@ -131,10 +131,8 @@ const contact = { href: '/#contact', label: 'Contact' };
     min-width: var(--touch-target);
     height: var(--touch-target);
     margin-inline-start: auto; /* pushes the toggle and the nav to the right */
-    padding: 0;
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
-    background-color: transparent;
+    padding: 0 var(--slant-pad);
+    --shape-line: var(--color-border-strong); /* parallelogram outline (shapes.css) */
     color: var(--color-text-muted);
     font-size: var(--step--1);
     font-weight: var(--weight-semibold);
@@ -143,7 +141,7 @@ const contact = { href: '/#contact', label: 'Contact' };
   }
 
   .motion-toggle:hover {
-    border-color: var(--color-accent);
+    --shape-line: var(--color-accent);
     color: var(--color-text);
   }
 
@@ -228,8 +226,7 @@ const contact = { href: '/#contact', label: 'Contact' };
     justify-content: center;
     width: var(--touch-target);
     height: var(--touch-target);
-    border: 1px solid var(--color-border-strong);
-    border-radius: var(--radius-md);
+    --shape-line: var(--color-border-strong); /* parallelogram outline (shapes.css) */
     color: var(--color-text);
     list-style: none;
     cursor: pointer;
@@ -241,7 +238,7 @@ const contact = { href: '/#contact', label: 'Contact' };
   }
 
   .nav__toggle:hover {
-    border-color: var(--color-accent);
+    --shape-line: var(--color-accent);
   }
 
   /* Closed: menu icon. Open: close icon. */

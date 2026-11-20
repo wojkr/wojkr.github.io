@@ -98,11 +98,18 @@
   --space-11: 10rem; /* 160px */
   --space-section: clamp(4rem, 2.5rem + 7.5vw, 9rem); /* vertical padding of .section */
 
-  /* --- Radius --- */
-  --radius-sm: 0.375rem; /* tags, inputs */
-  --radius-md: 0.75rem; /* buttons, small cards */
-  --radius-lg: 1.25rem; /* cards */
-  --radius-pill: 999px;
+  /* --- Shape language "Slant" (see shapes.css) ---
+     No rounded corners and no pills. Controls are parallelograms; panels
+     have square edges with two cut corners (top right, bottom left). */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-pill: 0;
+  --slant: -14deg; /* lean of buttons and controls */
+  --slant-tag: -12deg; /* lean of small tags and badges */
+  --slant-pad: 0.375rem; /* extra side padding: the lean takes space at the corners */
+  --cut: 0.875rem; /* size of the cut corners of panels (14px) */
+  --cut-sm: 0.5rem; /* cut corners of small panels: inputs, images */
 
   /* --- Shadows (dark theme: deep and soft) --- */
   --shadow-sm: 0 1px 2px rgb(8 5 14 / 0.4);
